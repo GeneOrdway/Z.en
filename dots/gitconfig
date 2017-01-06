@@ -1,0 +1,10 @@
+[color]
+	diff = auto
+	status = auto
+	branch = auto
+	ui = auto
+[alias]
+	st = status
+[user]
+	name = Gene Ordway
+	email = GeneOrdway@GMail.com
