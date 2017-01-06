@@ -1,0 +1,41 @@
+#
+#
+#
+
+###         ### 
+### LICENSE ###
+###         ###
+
+# Written by: Gene Ordway
+# Http://www.GeneOrdway.com
+# GeneOrdway@Gmail.com
+#
+# 
+
+###       ###
+### TO DO ###
+###       ###
+
+# 1 - 
+
+###               ###
+### DOCUMENTATION ###
+###               ###
+
+Explanation of home directory structure:
+
+/$HOME/.bin/ - Standalone utilities to be run with user-level privileges.
+
+/$HOME/.doc/ - Documentation regarding 
+
+/$HOME/.etc/ - Configuration files for utilities.
+
+/$HOME/.libexec/ - Utilities executed by other programs. These can also be
+executed as standalone programs, but are primarily called by other
+applications.
+
+/$HOME/.sbin/ - Standalone utilities to be run with elevated privileges. 
+
+
+
+# EOF
