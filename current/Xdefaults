@@ -186,9 +186,11 @@ XTerm*vt100*geometry:         80x28+176+0
 !XTerm*resizeGravity:          SouthEast
 
 # Font:
+xterm*faceName: DejaVu Sans Mono:style=Book:antialias=true
+
 # Antialiased:
-XTerm*faceName:               DejaVu Sans Mono:antialias=true:style=regular
-XTerm*faceSize:               8.5
+#XTerm*faceName:               DejaVu Sans Mono:antialias=true:style=regular
+XTerm*faceSize:               9
 # Aliased:
 !XTerm*font:                   -misc-dejavu sans mono-medium-r-normal-*-11-*-100-100-m-*-iso8859-1
 !XTerm*boldFont:               -misc-dejavu sans mono-medium-r-bold-*-11-*-100-100-m-*-iso8859-1

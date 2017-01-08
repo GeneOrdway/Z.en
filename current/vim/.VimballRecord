@@ -1,0 +1,1 @@
+getscript.vba: call delete('/Users/silverstorm/.vim/plugin/getscriptPlugin.vim')|call delete('/Users/silverstorm/.vim/autoload/getscript.vim')|call delete('/Users/silverstorm/.vim/GetLatest/GetLatestVimScripts.dist')|call delete('/Users/silverstorm/.vim/doc/pi_getscript.txt')
