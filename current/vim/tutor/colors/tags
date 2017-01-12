@@ -1,0 +1,1 @@
+exists	faded.vim	/^if exists("syntax_on")$/
