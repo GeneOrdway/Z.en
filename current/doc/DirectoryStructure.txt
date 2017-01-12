@@ -26,9 +26,14 @@ Explanation of home directory structure:
 
 /$HOME/.bin/ - Standalone utilities to be run with user-level privileges.
 
-/$HOME/.doc/ - Documentation regarding 
+/$HOME/.doc/ - Documentation regarding all files contained in user's home directory. 
 
 /$HOME/.etc/ - Configuration files for utilities.
+
+/$HOME/.lib/ - Non-executable files used by other programs.
+/$HOME/.lib/icons/ - 
+/$HOME/.lib/graphics/ - 
+/$HOME/.lib/fonts/ - 
 
 /$HOME/.libexec/ - Utilities executed by other programs. These can also be
 executed as standalone programs, but are primarily called by other
