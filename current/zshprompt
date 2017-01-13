@@ -24,8 +24,9 @@
 ARRAY_GRADIENT_LEFT_FOREGROUND_COLORS=(227 221 215 209 203 197 161 125 89 53 233)
 ARRAY_GRADIENT_LEFT_BACKGROUND_COLORS=(226 220 214 208 202 196 160 124 88 52 16)
 #ARRAY_GRADIENT_LEFT_CHARACTERS=(░ ░ ░ ░ ▒ ▒ ▒ ▒ ▓ ▓ ▓)
-#ARRAY_GRADIENT_LEFT_CHARACTERS=(░ ░ ░ ░ ░ ░ ░ ░ ░ ░ ░)
-ARRAY_GRADIENT_LEFT_CHARACTERS=(" " " " " " " " " " " " " " " " " " " " " ")
+ARRAY_GRADIENT_LEFT_CHARACTERS=(░ ░ ░ ░ ░ ░ ░ ░ ░ ░ ░)
+# Use below if no support for extended characters.
+#ARRAY_GRADIENT_LEFT_CHARACTERS=(" " " " " " " " " " " " " " " " " " " " " ")
 #ARRAY_GRADIENT_LEFT_CHARACTERS=(\xE2\x96\x91 \xE2\x96\x91 \xE2\x96\x91 \xE2\x96\x91 \xE2\x96\x91 \xE2\x96\x91 \xE2\x96\x91 \xE2\x96\x91 \xE2\x96\x91 \xE2\x96\x91 \xE2\x96\x91)
 ARRAY_GRADIENT_RIGHT_FOREGROUND_COLORS=(233 234 235 24 25 26 32 69 75 81 87)
 ARRAY_GRADIENT_RIGHT_BACKGROUND_COLORS=(16 17 18 19 20 21 27 33 39 45 51)
@@ -49,11 +50,29 @@ ARRAY_GRADIENT_RIGHT_CHARACTERS=(░ ░ ░ ░ ░ ░ ░ ░ ░ ░ ░)
 #    done
 #} 
 
+# Function to set the color of the prompt X based upon last exit status.
+fn_ExitStatus () {
+    local EXIT_CODE="$?"
+    if [[ $EXIT_CODE -eq 0 ]]; then  
+        PR_PRIVILEGES='%F{34}%K{235}%#%f%k'
+    elif [[ $EXIT_CODE -eq 1 ]]; then  
+        PR_PRIVILEGES='%F{160}%K{235}%#%f%k'
+    else
+        PR_PRIVILEGES='%F{248}%K{235}%#%f%k'
+    fi
+}
+
 ###             ###
 ### PRE-COMMAND ###
 ###             ###
 
 function precmd {
+    # Get previous command's exit status. Run this before executing any other
+    # zsh pre-command executables, or you'll get the status of the previously
+    # run zsh command, rather than what the shell last executed.
+    EXIT_CODE=$?
+#    EXIT_CODE=`print -P "%?"`
+
     # Find the terminal's width and height
     local TERMWIDTH
     local TERMHEIGHT
@@ -68,7 +87,7 @@ function precmd {
 
     # Get Number of Files here.
     # Note: This uses ZSH's globbing feature. Make sure it is enabled.
-    DIRECTORY_NUM_FILES=`pwd`/(*(DNoN))
+    #DIRECTORY_NUM_FILES=`pwd`/(*(DNoN))
     #echo $#DIRECTORY_NUM_FILES
 
     # Lets try another approach.
@@ -210,17 +229,20 @@ PR_LINE_NUMBERS='%F{101}%K{16} %I %f%k'
 PR_PWD='%F{246}%K{236}%d'
 
 # Privileges:
-if [[ $? -eq 0 ]]; then  
-    PR_PRIVILEGES='%F{34}%K{235}%#%f%k'
-elif [[ $? -eq 1 ]]; then  
-    PR_PRIVILEGES='%F{160}%K{235}%#%f%k'
-else
-    PR_PRIVILEGES='%F{248}%K{235}%#%f%k'
-fi
+#PR_PRIVILEGES='%?' -- works properly
+fn_ExitStatus
+
+#if [[ $EXIT_CODE -eq 0 ]]; then  
+#    PR_PRIVILEGES='%F{34}%K{235}%#%f%k'
+#elif [[ $EXIT_CODE -eq 1 ]]; then  
+#    PR_PRIVILEGES='%F{160}%K{235}%#%f%k'
+#else
+#    PR_PRIVILEGES='%F{248}%K{235}%#%f%k'
+#fi
 
 # Directory Info:
 #PR_DIRECTORY_INFO=${#DIRECTORY_NUM_FILES}' files,'$(du -sh 2>/dev/null | cut -f1)
-PR_DIRECTORY_INFO=''
+PR_DIRECTORY_INFO='Test'
 
 # Version Control System Status:
 PR_VCS_STATUS=''
