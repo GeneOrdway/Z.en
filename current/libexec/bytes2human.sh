@@ -66,6 +66,7 @@ fi
 while [ $CURRENT_STEP -ne $NEXT_STEP ]
 do 
 
+    # Need to convert this to use bc because of floating point numbers.
     if [ ${ARRAY_FILE_SIZES[$CURRENT_STEP]} -ge 1024 ]; then
         # We need to use bc because we require floating point numbers.
         ARRAY_FILE_SIZES[$NEXT_STEP]=`$PRINTF "scale=2; ${ARRAY_FILE_SIZES[$CURRENT_STEP]} / 1024 \n" | $BC`
