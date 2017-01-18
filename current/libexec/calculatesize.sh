@@ -7,7 +7,19 @@
 ### TO DO ###
 ###       ###
 
-# 1) -
+# 1) - 
+
+###          ###
+### PROGRAMS ###
+###          ###
+FIND="/usr/bin/find"
+XARGS="/usr/bin/xargs"
+STAT="/usr/bin/stat"
+PRINTF="/usr/bin/printf"
+BASENAME="/usr/bin/basename"
+DIRNAME="/usr/bin/dirname"
+BYTES2HUMAN="bytes2human.sh"
+BASE64="/usr/bin/base64"
 
 ###           ###
 ### VARIABLES ###
@@ -18,17 +30,6 @@ FILE_SIZES_TOTAL_HUMAN=0
 # Set input to a variable. 
 DIRECTORY=$1
 
-###          ###
-### PROGRAMS ###
-###          ###
-FIND="/usr/bin/find"
-XARGS="/usr/bin/xargs"
-STAT="/usr/bin/stat"
-PRINTF="/usr/bin/printf"
-#LS="/bin/ls"
-#AWK="/usr/bin/awk"
-B2H="$HOME/b2h.sh"
-
 ###        ###
 ### ARRAYS ###
 ###        ###
@@ -38,29 +39,57 @@ ARRAY_DIRECTORY_FILE_SIZES=()
 ### FUNCTIONS ###
 ###           ###
 
+# Show the Help menu:
+fn_SHOW_HELP() {
+    $PRINTF "HELP MENU:\n"
+    exit 0
+}
+
+# Check for installed programs:
+fn_CHECK_PROGRAMS() {
+    $PRINTF "Programs.\n"
+}
+
+# Error Messages:
+fn_ERROR_MESSAGE() {
+    $PRINTF "ERROR: $*\n" 1>&2 
+}
+
 ###      ###
 ### MAIN ###
 ###      ###
 
 # Error Checking:
-if [ ! -d $DIRECTORY ]; then
+# Check for installed programs:
+## Thinking about this, should I check for errors in this script, or assume
+## what PROGRAMS sends over has already been cleaned? 
+#if [ ! -e $FIND ]; then
+#    $PRINTF "ERROR: Cannot find program, NAME at location: $FIND. Exiting.\n"
+#    exit 1
+#fi
+
+# Check the directory:
+if [ -z $DIRECTORY ]; then
+# Is a directory supplied? No? Show the help menu.
+    fn_SHOW_HELP
+elif [ ! -d $DIRECTORY ]; then
 # Is the supplied directory actually a directory?
-    $PRINTF "$DIRECTORY is not a directory.\n"
+    fn_ERROR_MESSAGE "$DIRECTORY is not a directory."
     exit 1
 elif [ ! -r $DIRECTORY ]; then
 # Is the supplied directory readable?
-    $PRINTF "Directory $DIRECTORY is not readable.\n"
+    fn_ERROR_MESSAGE "Directory $DIRECTORY is not readable."
     exit 1
 fi
 
-# External scripts:
-if [ ! -e $B2H ]; then
-# Does the script b2h exist?
-    $PRINTF "Cannot find $B2h.\n"
+# External Scripts:
+if [ ! -e $BYTES2HUMAN ]; then
+# Does the script bytes2human exist?
+    fn_ERROR_MESSAGE "Cannot find $BYTES2HUMAN."
     exit 1
-elif [ ! -x $B2h ]; then
-# Is the script b2h executable?
-    $PRINTF "$B2H is not writeable.\n"
+elif [ ! -x $BYTES2HUMAN ]; then
+# Is the script bytes2human executable?
+    fn_ERROR_MESSAGE "$BYTES2HUMAN is not executable."
     exit 1
 fi
 
@@ -68,28 +97,24 @@ fi
 
 # Determine the Operating System:
 # OS X
-if [[ "$OSTYPE" == "darwin"* ]]; then  
-#    FILE_SIZES_TOTAL_HUMAN=`$LS -Alp $1 | $AWK '!/\//{FILE_SIZES_TOTAL_BYTES+=$5} END {print FILE_SIZES_TOTAL_BYTES}'`
-#    FILE_SIZES_TOTAL_HUMAN=`$LS -Alp $1 | $AWK '{gsub(!/\//,FILE_SIZES_TOTAL_BYTES+=$5),print FILE_SIZES_TOTAL_BYTES}'`
-#    FILE_SIZES_TOTAL_HUMAN=`$LS -Alp $1 | $AWK 'function human(x) {
-#         s=" B   KiB MiB GiB TiB EiB PiB YiB ZiB"
-#         while (x>=1024 && length(s)>1) 
-#               {x/=1024; s=substr(s,5)}
-#         s=substr(s,1,4)
-#         xf=(s==" B  ")?"%5d   ":"%8.2f"
-#         return sprintf( xf"%s\n", x, s)
-#      }
-#      {gsub(!/\//, human($5)); print}'`     
+if [[ "$OSTYPE" == "darwin"* ]]; then     
     ARRAY_DIRECTORY_FILE_SIZES=(`$FIND $DIRECTORY/* -maxdepth 1 -prune -type f -print0 | $XARGS -0 $STAT -f '%z'`)
     echo "ARRAY_DIRECTORY_FILE_SIZES is: ${ARRAY_DIRECTORY_FILE_SIZES[*]}"
+
+    # If the Terminal is iTerm, use inline images. 
+    if [ $TERM_PROGRAM == "iTerm.app" ]; then
+        $PRINTF "iTerm!\n"
+    fi
+
 #FreeBSD
 elif [[ "$OSTYPE" == "freebsd"* ]]; then 
-    ARRAY_DIRECTORY_FILE_SIZES=`$LS -Al | $AWK '!/\// {print $5}'`
+    #ARRAY_DIRECTORY_FILE_SIZES=`$LS -Al | $AWK '!/\// {print $5}'`
+    ARRAY_DIRECTORY_FILE_SIZES=""
 # Linux
 elif [[ "$OSTYPE" == "linux-gnu" ]]; then
     ARRAY_DIRECTORY_FILE_SIZES=""
 else 
-    $PRINTF "Could not determine Operating System. Exiting.\n"
+    fn_ERROR_MESSAGE "Could not determine Operating System. Exiting."
     exit 1
 fi
 
@@ -105,7 +130,7 @@ done
 echo "FILE_SIZES_TOTAL_BYTES is: $FILE_SIZES_TOTAL_BYTES"
 
 # Convert bytes to human-readable:
-$B2H $FILE_SIZES_TOTAL_BYTES
+#$BYTES2HUMAN $FILE_SIZES_TOTAL_BYTES
 
 
 #$PRINTF "$FILE_SIZES_TOTAL_HUMAN\n"
@@ -114,21 +139,5 @@ $B2H $FILE_SIZES_TOTAL_BYTES
 #    DIRECTORY_SIZE="DIRECTORY_SIZE+ARRAY_DIRECTORY_FILE_SIZES[i]"
 #done
 
-###          ###
-### EXAMPLES ###
-###          ###
-
-#awk 'function human(FILE_SIZE) {
-#         SIZE_STRING=" B   KiB MiB GiB TiB EiB PiB YiB ZiB"
-#         while (FILE_SIZE>=1024 && length(SIZE_STRING)>1) 
-#               {FILE_SIZE/=1024; SIZE_STRING=substr(SIZE_STRING,5)}
-#         SIZE_STRING=substr(SIZE_STRING,1,4)
-#         xf=(SIZE_STRING==" B  ")?"%5d   ":"%8.2f"
-#         return sprintf( xf"%SIZE_STRING\n", FILE_SIZE, SIZE_STRING)
-#      }
-#      {gsub(/^[0-9]+/, human($1)); print}'
-
-
-#{ if (match($0,/your regexp/,m)) print m[0] }
-
+exit 0
 # EOF
