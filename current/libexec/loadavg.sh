@@ -3,30 +3,75 @@
 # This script prints a colorized output of your system's load averages.
 
 ###       ###
-### TO Do ###
+### TO DO ###
 ###       ###
 
-# Allow for uptime, not just sysctl
-# Fix sysctl output.
+# 1) - Allow for uptime, not just sysctl
+# 2) - Fix sysctl output.
+# 3) - Add support for additional colors, based upon
+# 4) - Finish support for other platforms.
+# 5) - 
 
 ###          ###
 ### PROGRAMS ###
 ###          ###
-BASENAME="/usr/bin/basename"
-SYSCLT="/usr/sbin/sysctl"
-UPTIME="/usr/bin/uptime"
-AWK="/usr/bin/awk"
 PRINTF="/usr/bin/printf"
+AWK="/usr/bin/awk"
+SYSCTL="/usr/sbin/sysctl"
+UPTIME="/usr/bin/uptime"
 
 ###           ###
 ### VARIABLES ###
 ###           ###
 
+
+###           ###
+### FUNCTIONS ###
+###           ###
+
+# Show the Help menu:
+fn_SHOW_HELP() {
+    $PRINTF "HELP MENU:\n"
+    exit 0
+}
+
+# Check for installed programs:
+fn_CHECK_PROGRAMS() {
+    $PRINTF "Programs.\n"
+}
+
+# Error Messages:
+fn_ERROR_MESSAGE() {
+    $PRINTF "ERROR: $*\n" 1>&2 
+}
+
 ###      ###
 ### MAIN ###
 ###      ###
 
-LOADAVG=$(sysctl -n vm.loadavg | $AWK '{
+# Determine the Operating System:
+# OS X
+if [[ "$OSTYPE" == "darwin"* ]]; then     
+    LOADAVG="$SYSCTL -n vm.loadavg"
+    SHELLAWKARGS="{gsub(/[^0-9. ]/,"")}"
+#FreeBSD
+elif [[ "$OSTYPE" == "freebsd"* ]]; then 
+    LOADAVG=""
+    SHELLAWKARGS=""
+# Linux
+elif [[ "$OSTYPE" == "linux-gnu" ]]; then
+    LOADAVG=" uptime | awk '{gsub(/[0-9]+(\.[0-9]{1,2})/,"")} {print}'" 
+    SHELLAWKARGS=""
+else 
+    fn_ERROR_MESSAGE "Could not determine Operating System. Exiting."
+    exit 1
+fi
+
+# Check support for colors here.
+###
+
+# Get the load averages:
+OUTPUT=$($LOADAVG | $AWK -v AWKARGS=$SHELLAWKARGS '{
 # One Minute Average: 
 if ($2 >= 5)
     # Red
@@ -64,5 +109,8 @@ else
 print ONE, FIVE, FIFTEEN;
 }')
 
-$PRINTF "$LOADAVG\n"
+# Print output.
+$PRINTF "$OUTPUT\n"
 
+exit 0
+#EOF
