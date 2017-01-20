@@ -6,8 +6,9 @@
 ### TO DO ###
 ###       ###
 
-# 1) - Add support for additional colors, based upon
-# 2) - 
+# 1) - Check for program support before executing for cleaner error checking.
+# 2) - Add support for additional colors, based upon terminal output.
+# 3) - 
 
 ###          ###
 ### PROGRAMS ###
@@ -16,11 +17,7 @@ PRINTF="/usr/bin/printf"
 AWK="/usr/bin/awk"
 SYSCTL="/usr/sbin/sysctl"
 UPTIME="/usr/bin/uptime"
-
-###           ###
-### VARIABLES ###
-###           ###
-
+TPUT="/usr/bin/tput"
 
 ###           ###
 ### FUNCTIONS ###
@@ -56,10 +53,25 @@ else
 fi
 
 # Check support for colors here.
-###
+COLORS=`$TPUT colors`
+if [ $COLORS -eq 256 ]; then
+    # X-Term-Color - Full 256 color support.
+    $PRINTF "256 colors.\n"
+elif [ $COLORS -eq 88 ]; then
+    # URXVT - Only supports 88 colors.
+    $PRINTF "88 colors.\n"
+elif [ $COLORS -eq 8 ]; then
+    # X-Term - Default for most terminals.
+    $PRINTF "8 colors.\n"
+elif [ $COLORS -eq 0 ]; then
+    # Monochrome - What kind of ancient-ass hardware are you running?
+    $PRINTF "0 colors.\n"
+else
+    $PRINTF "Probably an error.\n"
+fi
 
 # Get the load averages:
-OUTPUT=$($LOADAVG | $AWK 'match($0,/[0-9]\.([0-9]{2})/){
+OUTPUT=`$LOADAVG | $AWK 'match($0,/[0-9]\.([0-9]{2})/){
 LOADAVG=(substr($0, RSTART,RLENGTH+10));
 # Matches the regular expression pattern for #.## and copies the 10 spaces
 # from the first pattern match to the last entry. Then stores that to
@@ -105,7 +117,7 @@ else
 
 # One line with all three outputs
 print ONE, FIVE, FIFTEEN;
-}')
+}'`
 
 # Print output.
 $PRINTF "$OUTPUT\n"
