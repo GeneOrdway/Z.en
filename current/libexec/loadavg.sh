@@ -8,16 +8,20 @@
 
 # 1) - Check for program support before executing for cleaner error checking.
 # 2) - Add support for additional colors, based upon terminal output.
-# 3) - 
+# 3) - Add number of physical cores available to get a better display of the
+#       numbers.
+# 4) - Get rid of the pipe between OUTPUT and AWK. Change that to pass awk a
+#       shell variable for loadavg instead and adjust script accordingly.
+# 5) - 
 
 ###          ###
 ### PROGRAMS ###
 ###          ###
 PRINTF="/usr/bin/printf"
 AWK="/usr/bin/awk"
+TPUT="/usr/bin/tput"
 SYSCTL="/usr/sbin/sysctl"
 UPTIME="/usr/bin/uptime"
-TPUT="/usr/bin/tput"
 
 ###           ###
 ### FUNCTIONS ###
@@ -41,12 +45,16 @@ fn_ERROR_MESSAGE() {
 # OS X
 if [[ "$OSTYPE" == "darwin"* ]]; then     
     LOADAVG="$SYSCTL -n vm.loadavg"
-#FreeBSD
+    CORES=`$SYSCTL -n hw.physicalcpu`
+# FreeBSD
 elif [[ "$OSTYPE" == "freebsd"* ]]; then 
-    LOADAVG="$UPTIME"
+    LOADAVG="$SYSCTL -a vm.loadavg"
+    CORES=`$SYSCTL -a hw.ncpu`
 # Linux
 elif [[ "$OSTYPE" == "linux-gnu" ]]; then
     LOADAVG="$UPTIME" 
+    # There may be a better way to do this.
+    CORES=`$AWK '/^processor/ {++n} END {print n+1}' /proc/cpuinfo`
 else 
     fn_ERROR_MESSAGE "Could not determine Operating System. Exiting."
     exit 1
@@ -54,6 +62,7 @@ fi
 
 # Check support for colors here.
 COLORS=`$TPUT colors`
+# Leave this in for error checking?
 if [ $COLORS -eq 256 ]; then
     # X-Term-Color - Full 256 color support.
     $PRINTF "256 colors.\n"
@@ -65,13 +74,21 @@ elif [ $COLORS -eq 8 ]; then
     $PRINTF "8 colors.\n"
 elif [ $COLORS -eq 0 ]; then
     # Monochrome - What kind of ancient-ass hardware are you running?
-    $PRINTF "0 colors.\n"
+    fn_ERROR_MESSAGE "There is no point in continuing, this script is designed to display color output, but your terminal does not support colors."
+    exit 1
 else
-    $PRINTF "Probably an error.\n"
+    fn_ERROR_MESSAGE "Could not determine if your terminal supports colors. Exiting"
+    exit 1
+fi
+
+# Check the number of cores:
+if [ $CORES -eq 0 ]; then
+    fn_ERROR_MESSAGE "Could not determine the number of physical cpu cores available. Script will now set value to 1. User should check script settings."
+    CORES=1
 fi
 
 # Get the load averages:
-OUTPUT=`$LOADAVG | $AWK 'match($0,/[0-9]\.([0-9]{2})/){
+OUTPUT=`$LOADAVG | $AWK -v AWK_COLORS=$COLORS -v AWK_CORES=$CORES 'match($0,/[0-9]\.([0-9]{2})/){
 LOADAVG=(substr($0, RSTART,RLENGTH+10));
 # Matches the regular expression pattern for #.## and copies the 10 spaces
 # from the first pattern match to the last entry. Then stores that to
@@ -117,6 +134,7 @@ else
 
 # One line with all three outputs
 print ONE, FIVE, FIFTEEN;
+print AWK_COLORS, AWK_CORES;
 }'`
 
 # Print output.
