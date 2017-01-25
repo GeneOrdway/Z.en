@@ -97,40 +97,246 @@ LOADAVG=(substr($0, RSTART,RLENGTH+10));
 # Split the string into the three necessary pieces
 split(LOADAVG, ARRAY_LOADAVG," ");
 
+# Determine cores and re-evaluate the load averages:
+ONE_LOADAVG = ARRAY_LOADAVG[1] / AWK_CORES
+FIVE_LOADAVG = ARRAY_LOADAVG[2] / AWK_CORES
+FIFTEEN_LOADAVG = ARRAY_LOADAVG[3] / AWK_CORES
+
+# Determine the colors.
+
+
 # Apply colors:
 
-# One Minute Average: 
-if (ARRAY_LOADAVG[1] >= 5)
-    # Red
-    ONE="\033[31m"ARRAY_LOADAVG[1];
-else if (ARRAY_LOADAVG[1] >= 1)
-    # Yellow
-    ONE="\033[33m"ARRAY_LOADAVG[1];
-else 
-    # Green
-    ONE="\033[32m"ARRAY_LOADAVG[1];
+# 256-color terminals
+#if (AWK_COLORS = 256)
+    # One Minute Average: 
+    if (ONE_LOADAVG >= 5.00)
+        # Red
+        ONE="\033[38;05;196m"ARRAY_LOADAVG[1]"\033[0m";
+    else if (ONE_LOADAVG >= 4.75)
+        # 
+        ONE="\033[38;05;202m"ARRAY_LOADAVG[1]"\033[0m";
+    else if (ONE_LOADAVG >= 4.50)
+        # 
+        ONE="\033[38;05;208m"ARRAY_LOADAVG[1]"\033[0m";
+    else if (ONE_LOADAVG >= 4.25)
+        # 
+        ONE="\033[38;05;214m"ARRAY_LOADAVG[1]"\033[0m";
+    else if (ONE_LOADAVG >= 4.00)
+        # 
+        ONE="\033[38;05;220m"ARRAY_LOADAVG[1]"\033[0m";
+    else if (ONE_LOADAVG >= 3.75)
+        # Yellow 
+        ONE="\033[38;05;226m"ARRAY_LOADAVG[1]"\033[0m";
+    else if (ONE_LOADAVG >= 3.50)
+        # 
+        ONE="\033[38;05;190m"ARRAY_LOADAVG[1]"\033[0m";
+    else if (ONE_LOADAVG >= 3.25)
+        # 
+        ONE="\033[38;05;154m"ARRAY_LOADAVG[1]"\033[0m";
+    else if (ONE_LOADAVG >= 3.00)
+        # Red
+        ONE="\033[38;05;118m"ARRAY_LOADAVG[1]"\033[0m";
+    else if (ONE_LOADAVG >= 2.75)
+        # 
+        ONE="\033[38;05;82m"ARRAY_LOADAVG[1]"\033[0m";
+    else if (ONE_LOADAVG >= 2.50)
+        # Green
+        ONE="\033[38;05;46m"ARRAY_LOADAVG[1]"\033[0m";
+    else if (ONE_LOADAVG >= 2.25)
+        # 
+        ONE="\033[38;05;47m"ARRAY_LOADAVG[1]"\033[0m";
+    else if (ONE_LOADAVG >= 2.00)
+        # 
+        ONE="\033[38;05;48m"ARRAY_LOADAVG[1]"\033[0m";
+    else if (ONE_LOADAVG >= 1.75)
+        # 
+        ONE="\033[38;05;49m"ARRAY_LOADAVG[1]"\033[0m";
+    else if (ONE_LOADAVG >= 1.50)
+        # Cyan 
+        ONE="\033[38;05;50m"ARRAY_LOADAVG[1]"\033[0m";
+    else if (ONE_LOADAVG >= 1.25)
+        # 
+        ONE="\033[38;05;51m"ARRAY_LOADAVG[1]"\033[0m";
+    else if (ONE_LOADAVG >= 1.00)
+        # 
+        ONE="\033[38;05;45m"ARRAY_LOADAVG[1]"\033[0m";
+    else if (ONE_LOADAVG >= 0.75)
+        # 
+        ONE="\033[38;05;39m"ARRAY_LOADAVG[1]"\033[0m";
+    else if (ONE_LOADAVG >= 0.50)
+        # 
+        ONE="\033[38;05;33m"ARRAY_LOADAVG[1]"\033[0m";        
+    else if (ONE_LOADAVG >= 0.25)
+        #  
+        ONE="\033[38;05;27m"ARRAY_LOADAVG[1]"\033[0m";
+    else 
+        # Blue 
+        ONE="\033[38;05;21m"ARRAY_LOADAVG[1]"\033[0m";
 
-# Five Minute Average:
-if (ARRAY_LOADAVG[2] >= 5)
-    # Red
-    FIVE="\033[31m"ARRAY_LOADAVG[2];
-else if (ARRAY_LOADAVG[2] >= 1)
-    # Yellow
-    FIVE="\033[33m"ARRAY_LOADAVG[2];
-else 
-    # Green
-    FIVE="\033[32m"ARRAY_LOADAVG[2];
+    # Five Minute Average:
+    if (FIVE_LOADAVG >= 5.00)
+        # Red
+        FIVE="\033[38;05;196m"ARRAY_LOADAVG[2]"\033[0m";
+    else if (FIVE_LOADAVG >= 4.75)
+        # 
+        FIVE="\033[38;05;202m"ARRAY_LOADAVG[2]"\033[0m";
+    else if (FIVE_LOADAVG >= 4.50)
+        # 
+        FIVE="\033[38;05;208m"ARRAY_LOADAVG[2]"\033[0m";
+    else if (FIVE_LOADAVG >= 4.25)
+        # 
+        FIVE="\033[38;05;214m"ARRAY_LOADAVG[2]"\033[0m";
+    else if (FIVE_LOADAVG >= 4.00)
+        # 
+        FIVE="\033[38;05;220m"ARRAY_LOADAVG[2]"\033[0m";
+    else if (FIVE_LOADAVG >= 3.75)
+        # Yellow 
+        FIVE="\033[38;05;226m"ARRAY_LOADAVG[2]"\033[0m";
+    else if (FIVE_LOADAVG >= 3.50)
+        # 
+        FIVE="\033[38;05;190m"ARRAY_LOADAVG[2]"\033[0m";
+    else if (FIVE_LOADAVG >= 3.25)
+        # 
+        FIVE="\033[38;05;154m"ARRAY_LOADAVG[2]"\033[0m";
+    else if (FIVE_LOADAVG >= 3.00)
+        # Red
+        FIVE="\033[38;05;118m"ARRAY_LOADAVG[2]"\033[0m";
+    else if (FIVE_LOADAVG >= 2.75)
+        # 
+        FIVE="\033[38;05;82m"ARRAY_LOADAVG[2]"\033[0m";
+    else if (FIVE_LOADAVG >= 2.50)
+        # Green
+        FIVE="\033[38;05;46m"ARRAY_LOADAVG[2]"\033[0m";
+    else if (FIVE_LOADAVG >= 2.25)
+        # 
+        FIVE="\033[38;05;47m"ARRAY_LOADAVG[2]"\033[0m";
+    else if (FIVE_LOADAVG >= 2.00)
+        # 
+        FIVE="\033[38;05;48m"ARRAY_LOADAVG[2]"\033[0m";
+    else if (FIVE_LOADAVG >= 1.75)
+        # 
+        FIVE="\033[38;05;49m"ARRAY_LOADAVG[2]"\033[0m";
+    else if (FIVE_LOADAVG >= 1.50)
+        # Cyan 
+        FIVE="\033[38;05;50m"ARRAY_LOADAVG[2]"\033[0m";
+    else if (FIVE_LOADAVG >= 1.25)
+        # 
+        FIVE="\033[38;05;51m"ARRAY_LOADAVG[2]"\033[0m";
+    else if (FIVE_LOADAVG >= 1.00)
+        # 
+        FIVE="\033[38;05;45m"ARRAY_LOADAVG[2]"\033[0m";
+    else if (FIVE_LOADAVG >= 0.75)
+        # 
+        FIVE="\033[38;05;39m"ARRAY_LOADAVG[2]"\033[0m";
+    else if (FIVE_LOADAVG >= 0.50)
+        # 
+        FIVE="\033[38;05;33m"ARRAY_LOADAVG[2]"\033[0m";        
+    else if (FIVE_LOADAVG >= 0.25)
+        #  
+        FIVE="\033[38;05;27m"ARRAY_LOADAVG[2]"\033[0m";
+    else 
+        # Blue 
+        FIVE="\033[38;05;21m"ARRAY_LOADAVG[2]"\033[0m";
 
-# Fifteen Minute Average:
-if (ARRAY_LOADAVG[3] >= 5)
-    # Red 
-    FIFTEEN="\033[31m"ARRAY_LOADAVG[3];
-else if (ARRAY_LOADAVG[3] >= 1)
-    # Yellow
-    FIFTEEN="\033[33m"ARRAY_LOADAVG[3];
-else 
-    # Green
-    FIFTEEN="\033[32m"ARRAY_LOADAVG[3];
+    # Fifteen Minute Average:
+    if (FIFTEEN_LOADAVG >= 5.00)
+        # Red
+        FIFTEEN="\033[38;05;196m"ARRAY_LOADAVG[3]"\033[0m";
+    else if (FIFTEEN_LOADAVG >= 4.75)
+        # 
+        FIFTEEN="\033[38;05;202m"ARRAY_LOADAVG[3]"\033[0m";
+    else if (FIFTEEN_LOADAVG >= 4.50)
+        # 
+        FIFTEEN="\033[38;05;208m"ARRAY_LOADAVG[3]"\033[0m";
+    else if (FIFTEEN_LOADAVG >= 4.25)
+        # 
+        FIFTEEN="\033[38;05;214m"ARRAY_LOADAVG[3]"\033[0m";
+    else if (FIFTEEN_LOADAVG >= 4.00)
+        # 
+        FIFTEEN="\033[38;05;220m"ARRAY_LOADAVG[3]"\033[0m";
+    else if (FIFTEEN_LOADAVG >= 3.75)
+        # Yellow 
+        FIFTEEN="\033[38;05;226m"ARRAY_LOADAVG[3]"\033[0m";
+    else if (FIFTEEN_LOADAVG >= 3.50)
+        # 
+        FIFTEEN="\033[38;05;190m"ARRAY_LOADAVG[3]"\033[0m";
+    else if (FIFTEEN_LOADAVG >= 3.25)
+        # 
+        FIFTEEN="\033[38;05;154m"ARRAY_LOADAVG[3]"\033[0m";
+    else if (FIFTEEN_LOADAVG >= 3.00)
+        # Red
+        FIFTEEN="\033[38;05;118m"ARRAY_LOADAVG[3]"\033[0m";
+    else if (FIFTEEN_LOADAVG >= 2.75)
+        # 
+        FIFTEEN="\033[38;05;82m"ARRAY_LOADAVG[3]"\033[0m";
+    else if (FIFTEEN_LOADAVG >= 2.50)
+        # Green
+        FIFTEEN="\033[38;05;46m"ARRAY_LOADAVG[3]"\033[0m";
+    else if (FIFTEEN_LOADAVG >= 2.25)
+        # 
+        FIFTEEN="\033[38;05;47m"ARRAY_LOADAVG[3]"\033[0m";
+    else if (FIFTEEN_LOADAVG >= 2.00)
+        # 
+        FIFTEEN="\033[38;05;48m"ARRAY_LOADAVG[3]"\033[0m";
+    else if (FIFTEEN_LOADAVG >= 1.75)
+        # 
+        FIFTEEN="\033[38;05;49m"ARRAY_LOADAVG[3]"\033[0m";
+    else if (FIFTEEN_LOADAVG >= 1.50)
+        # Cyan 
+        FIFTEEN="\033[38;05;50m"ARRAY_LOADAVG[3]"\033[0m";
+    else if (FIFTEEN_LOADAVG >= 1.25)
+        # 
+        FIFTEEN="\033[38;05;51m"ARRAY_LOADAVG[3]"\033[0m";
+    else if (FIFTEEN_LOADAVG >= 1.00)
+        # 
+        FIFTEEN="\033[38;05;45m"ARRAY_LOADAVG[3]"\033[0m";
+    else if (FIFTEEN_LOADAVG >= 0.75)
+        # 
+        FIFTEEN="\033[38;05;39m"ARRAY_LOADAVG[3]"\033[0m";
+    else if (FIFTEEN_LOADAVG >= 0.50)
+        # 
+        FIFTEEN="\033[38;05;33m"ARRAY_LOADAVG[3]"\033[0m";        
+    else if (FIFTEEN_LOADAVG >= 0.25)
+        #  
+        FIFTEEN="\033[38;05;27m"ARRAY_LOADAVG[3]"\033[0m";
+    else 
+        # Blue 
+        FIFTEEN="\033[38;05;21m"ARRAY_LOADAVG[3]"\033[0m"; 
+### 
+#    # One Minute Average: 
+#    if (ONE_LOADAVG >= 5)
+#        # Red
+#        ONE="\033[31m"ARRAY_LOADAVG[1]"\033[0m";
+#    else if (ONE_LOADAVG >= 1)
+#        # Yellow
+#        ONE="\033[33m"ARRAY_LOADAVG[1]"\033[0m";
+#    else 
+#        # Green
+#        ONE="\033[32m"ARRAY_LOADAVG[1]"\033[0m";
+#
+#    # Five Minute Average:
+#    if (FIVE_LOADAVG >= 5)
+#        # Red
+#        FIVE="\033[31m"ARRAY_LOADAVG[2]"\033[0m";
+#    else if (FIVE_LOADAVG >= 1)
+#        # Yellow
+#        FIVE="\033[33m"ARRAY_LOADAVG[2]"\033[0m";
+#    else 
+#        # Green
+#        FIVE="\033[32m"ARRAY_LOADAVG[2]"\033[0m";
+#
+#    # Fifteen Minute Average:
+#    if (FIFTEEN_LOADAVG >= 5)
+#        # Red 
+#        FIFTEEN="\033[31m"ARRAY_LOADAVG[3]"\033[0m";
+#    else if (FIFTEEN_LOADAVG >= 1)
+#        # Yellow
+#        FIFTEEN="\033[33m"ARRAY_LOADAVG[3]"\033[0m";
+#    else 
+#        # Green
+#        FIFTEEN="\033[32m"ARRAY_LOADAVG[3]"\033[0m";
+
 
 # One line with all three outputs
 print ONE, FIVE, FIFTEEN;
