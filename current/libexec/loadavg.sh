@@ -10,7 +10,9 @@
 # 2) - Get rid of the pipe between OUTPUT and AWK. Change that to pass awk a
 #       shell variable for loadavg instead and adjust script accordingly.
 # 3) - Verify that all the proper error checking has been completed. 
-# 4) - 
+# 4) - Fix bug with awk always printing 256-color options in non-256-color
+#       terminals.
+# 5) - 
 
 ###          ###
 ### PROGRAMS ###
@@ -59,9 +61,10 @@ else
 fi
 
 # Check support for colors here.
-COLORS=`$TPUT colors`
+TERM_COLORS=`$TPUT colors`
+$PRINTF "COLORS: $TERM_COLORS\n"
 # Leave this in for error checking?
-if [ $COLORS -eq 0 ]; then
+if [ $TERM_COLORS -eq 0 ]; then
     # Monochrome - What kind of ancient-ass hardware are you running?
     fn_ERROR_MESSAGE "There is no point in continuing, this script is designed to display color output, but your terminal does not support colors."
     exit 1
@@ -78,7 +81,8 @@ if [ $CORES -eq 0 ]; then
 fi
 
 # Get the load averages:
-OUTPUT=`$LOADAVG | $AWK -v AWK_COLORS=$COLORS -v AWK_CORES=$CORES 'match($0,/[0-9]\.([0-9]{2})/){
+OUTPUT=`$LOADAVG | $AWK -v AWK_COLORS=$TERM_COLORS -v AWK_CORES=$CORES '
+match($0,/[0-9]\.([0-9]{2})/) {
 LOADAVG=(substr($0, RSTART,RLENGTH+10));
 # Matches the regular expression pattern for #.## and copies the 10 spaces
 # from the first pattern match to the last entry. Then stores that to
@@ -87,86 +91,88 @@ LOADAVG=(substr($0, RSTART,RLENGTH+10));
 # Split the string into the three necessary pieces
 split(LOADAVG, ARRAY_LOADAVG," ");
 
-# Determine cores and re-evaluate the load averages:
-#ONE_LOADAVG = ARRAY_LOADAVG[1] / AWK_CORES
-#FIVE_LOADAVG = ARRAY_LOADAVG[2] / AWK_CORES
-#FIFTEEN_LOADAVG = ARRAY_LOADAVG[3] / AWK_CORES
+}
+{
 
-#TEST
-ONE_LOADAVG = ARRAY_LOADAVG[1]
-FIVE_LOADAVG = ARRAY_LOADAVG[2]
-FIFTEEN_LOADAVG = ARRAY_LOADAVG[3]
+# Determine cores and re-evaluate the load averages:
+ONE_LOADAVG = ARRAY_LOADAVG[1] / AWK_CORES;
+FIVE_LOADAVG = ARRAY_LOADAVG[2] / AWK_CORES;
+FIFTEEN_LOADAVG = ARRAY_LOADAVG[3] / AWK_CORES;
+
+# Test Colors:
+print "AWK_COLORS is: "AWK_COLORS
 
 # Set Color and Load Average values into independent arrays:
-if (AWK_COLORS = 256) {
+if (AWK_COLORS = "256") {  
+    print "In 256 if"
     FG_ESCAPE_SEQUENCE="38;05;"
     BG_ESCAPE_SEQUENCE="48;05;"
     # Set Foreground Color Values:
-    ARRAY_FG_COLORS[1] = 21
-    ARRAY_FG_COLORS[2] = 27
-    ARRAY_FG_COLORS[3] = 33
-    ARRAY_FG_COLORS[4] = 39
-    ARRAY_FG_COLORS[5] = 45
-    ARRAY_FG_COLORS[6] = 51
-    ARRAY_FG_COLORS[7] = 50
-    ARRAY_FG_COLORS[8] = 49
-    ARRAY_FG_COLORS[9] = 48
-    ARRAY_FG_COLORS[10] = 47
-    ARRAY_FG_COLORS[11] = 46
-    ARRAY_FG_COLORS[12] = 82 
-    ARRAY_FG_COLORS[13] = 118 
-    ARRAY_FG_COLORS[14] = 154 
-    ARRAY_FG_COLORS[15] = 190 
-    ARRAY_FG_COLORS[16] = 226 
-    ARRAY_FG_COLORS[17] = 220 
-    ARRAY_FG_COLORS[18] = 214 
-    ARRAY_FG_COLORS[19] = 208 
-    ARRAY_FG_COLORS[20] = 202 
-    ARRAY_FG_COLORS[21] = 196
+    ARRAY_FG_COLORS[1]="21"
+    ARRAY_FG_COLORS[2]="27"
+    ARRAY_FG_COLORS[3]="33"
+    ARRAY_FG_COLORS[4]="39"
+    ARRAY_FG_COLORS[5]="45"
+    ARRAY_FG_COLORS[6]="51"
+    ARRAY_FG_COLORS[7]="50"
+    ARRAY_FG_COLORS[8]="49"
+    ARRAY_FG_COLORS[9]="48"
+    ARRAY_FG_COLORS[10]="47"
+    ARRAY_FG_COLORS[11]="46"
+    ARRAY_FG_COLORS[12]="82" 
+    ARRAY_FG_COLORS[13]="118" 
+    ARRAY_FG_COLORS[14]="154" 
+    ARRAY_FG_COLORS[15]="190" 
+    ARRAY_FG_COLORS[16]="226" 
+    ARRAY_FG_COLORS[17]="220" 
+    ARRAY_FG_COLORS[18]="214" 
+    ARRAY_FG_COLORS[19]="208" 
+    ARRAY_FG_COLORS[20]="202" 
+    ARRAY_FG_COLORS[21]="196"
     # Set Background Color Values:
-    ARRAY_BG_COLORS[1] = 16
-    ARRAY_BG_COLORS[2] = 16
-    ARRAY_BG_COLORS[3] = 16
-    ARRAY_BG_COLORS[4] = 16
-    ARRAY_BG_COLORS[5] = 16
-    ARRAY_BG_COLORS[6] = 16
-    ARRAY_BG_COLORS[7] = 16
-    ARRAY_BG_COLORS[8] = 16
-    ARRAY_BG_COLORS[9] = 16
-    ARRAY_BG_COLORS[10] = 16
-    ARRAY_BG_COLORS[11] = 16 
-    ARRAY_BG_COLORS[12] = 16
-    ARRAY_BG_COLORS[13] = 16
-    ARRAY_BG_COLORS[14] = 16
-    ARRAY_BG_COLORS[15] = 16
-    ARRAY_BG_COLORS[16] = 16
-    ARRAY_BG_COLORS[17] = 16
-    ARRAY_BG_COLORS[18] = 16
-    ARRAY_BG_COLORS[19] = 16
-    ARRAY_BG_COLORS[20] = 16
-    ARRAY_BG_COLORS[21] = 16
+    ARRAY_BG_COLORS[1]="16"
+    ARRAY_BG_COLORS[2]="16"
+    ARRAY_BG_COLORS[3]="16"
+    ARRAY_BG_COLORS[4]="16"
+    ARRAY_BG_COLORS[5]="16"
+    ARRAY_BG_COLORS[6]="16"
+    ARRAY_BG_COLORS[7]="16"
+    ARRAY_BG_COLORS[8]="16"
+    ARRAY_BG_COLORS[9]="16"
+    ARRAY_BG_COLORS[10]="16"
+    ARRAY_BG_COLORS[11]="16"
+    ARRAY_BG_COLORS[12]="16"
+    ARRAY_BG_COLORS[13]="16"
+    ARRAY_BG_COLORS[14]="16"
+    ARRAY_BG_COLORS[15]="16"
+    ARRAY_BG_COLORS[16]="16"
+    ARRAY_BG_COLORS[17]="16"
+    ARRAY_BG_COLORS[18]="16"
+    ARRAY_BG_COLORS[19]="16"
+    ARRAY_BG_COLORS[20]="16"
+    ARRAY_BG_COLORS[21]="16"
     # Set Load Average Values:
-    ARRAY_LOADAVG_VALUES[1] = 0.00 
-    ARRAY_LOADAVG_VALUES[2] = 0.25 
-    ARRAY_LOADAVG_VALUES[3] = 0.50 
-    ARRAY_LOADAVG_VALUES[4] = 0.75 
-    ARRAY_LOADAVG_VALUES[5] = 1.00 
-    ARRAY_LOADAVG_VALUES[6] = 1.25 
-    ARRAY_LOADAVG_VALUES[7] = 1.50
-    ARRAY_LOADAVG_VALUES[8] = 1.75 
-    ARRAY_LOADAVG_VALUES[9] = 2.00 
-    ARRAY_LOADAVG_VALUES[10] = 2.25 
-    ARRAY_LOADAVG_VALUES[11] = 2.50 
-    ARRAY_LOADAVG_VALUES[12] = 2.75 
-    ARRAY_LOADAVG_VALUES[13] = 3.00 
-    ARRAY_LOADAVG_VALUES[14] = 3.25 
-    ARRAY_LOADAVG_VALUES[15] = 3.59 
-    ARRAY_LOADAVG_VALUES[16] = 3.75 
-    ARRAY_LOADAVG_VALUES[17] = 4.00 
-    ARRAY_LOADAVG_VALUES[18] = 4.25 
-    ARRAY_LOADAVG_VALUES[19] = 4.50 
-    ARRAY_LOADAVG_VALUES[20] = 4.75 
-    ARRAY_LOADAVG_VALUES[21] = 5.00 
+    ARRAY_LOADAVG_VALUES[1]="0.00" 
+    ARRAY_LOADAVG_VALUES[2]="0.25" 
+    ARRAY_LOADAVG_VALUES[3]="0.50" 
+    ARRAY_LOADAVG_VALUES[4]="0.75" 
+    ARRAY_LOADAVG_VALUES[5]="1.00" 
+    ARRAY_LOADAVG_VALUES[6]="1.25" 
+    ARRAY_LOADAVG_VALUES[7]="1.50"
+    ARRAY_LOADAVG_VALUES[8]="1.75" 
+    ARRAY_LOADAVG_VALUES[9]="2.00" 
+    ARRAY_LOADAVG_VALUES[10]="2.25" 
+    ARRAY_LOADAVG_VALUES[11]="2.50" 
+    ARRAY_LOADAVG_VALUES[12]="2.75" 
+    ARRAY_LOADAVG_VALUES[13]="3.00" 
+    ARRAY_LOADAVG_VALUES[14]="3.25" 
+    ARRAY_LOADAVG_VALUES[15]="3.59" 
+    ARRAY_LOADAVG_VALUES[16]="3.75" 
+    ARRAY_LOADAVG_VALUES[17]="4.00" 
+    ARRAY_LOADAVG_VALUES[18]="4.25" 
+    ARRAY_LOADAVG_VALUES[19]="4.50" 
+    ARRAY_LOADAVG_VALUES[20]="4.75" 
+    ARRAY_LOADAVG_VALUES[21]="5.00" 
     }
 else if (AWK_COLORS = 88) {
     FG_ESCAPE_SEQUENCE="38;05;"
@@ -238,27 +244,27 @@ else if (AWK_COLORS = 88) {
     ARRAY_LOADAVG_VALUES[20] = 4.75 
     ARRAY_LOADAVG_VALUES[21] = 5.00 
     }
-else if (AWK_COLORS = 16) {
+else if (AWK_COLORS = "8") {
     FG_ESCAPE_SEQUENCE=""
     BG_ESCAPE_SEQUENCE=""
     # Set Foreground Color Values:
-    ARRAY_FG_COLORS[1] = 34  
-    ARRAY_FG_COLORS[2] = 36 
-    ARRAY_FG_COLORS[3] = 32 
-    ARRAY_FG_COLORS[4] = 33
-    ARRAY_FG_COLORS[5] = 31 
+    ARRAY_FG_COLORS[1]="34"  
+    ARRAY_FG_COLORS[2]="36" 
+    ARRAY_FG_COLORS[3]="32"
+    ARRAY_FG_COLORS[4]="33"
+    ARRAY_FG_COLORS[5]="31" 
     # Set Background Color Values:
-    ARRAY_BG_COLORS[1] = 30
-    ARRAY_BG_COLORS[2] = 30
-    ARRAY_BG_COLORS[3] = 30
-    ARRAY_BG_COLORS[4] = 30
-    ARRAY_BG_COLORS[5] = 30    
+    ARRAY_BG_COLORS[1]="30"
+    ARRAY_BG_COLORS[2]="30"
+    ARRAY_BG_COLORS[3]="30"
+    ARRAY_BG_COLORS[4]="30"
+    ARRAY_BG_COLORS[5]="30"    
     # Set Load Average Values:
-    ARRAY_LOADAVG_VALUES[1] = 0.00 
-    ARRAY_LOADAVG_VALUES[2] = 1.00 
-    ARRAY_LOADAVG_VALUES[3] = 2.00 
-    ARRAY_LOADAVG_VALUES[4] = 3.00 
-    ARRAY_LOADAVG_VALUES[5] = 5.00 
+    ARRAY_LOADAVG_VALUES[1]="0.00"
+    ARRAY_LOADAVG_VALUES[2]="1.00"
+    ARRAY_LOADAVG_VALUES[3]="2.00" 
+    ARRAY_LOADAVG_VALUES[4]="3.00" 
+    ARRAY_LOADAVG_VALUES[5]="5.00" 
     }
 else {
     print "ERROR: Terminal colors not passed to AWK. Exiting."
