@@ -10,9 +10,7 @@
 # 2) - Get rid of the pipe between OUTPUT and AWK. Change that to pass awk a
 #       shell variable for loadavg instead and adjust script accordingly.
 # 3) - Verify that all the proper error checking has been completed. 
-# 4) - Fix bug with awk always printing 256-color options in non-256-color
-#       terminals.
-# 5) - 
+# 4) - 
 
 ###          ###
 ### PROGRAMS ###
@@ -62,7 +60,6 @@ fi
 
 # Check support for colors here.
 TERM_COLORS=`$TPUT colors`
-$PRINTF "COLORS: $TERM_COLORS\n"
 # Leave this in for error checking?
 if [ $TERM_COLORS -eq 0 ]; then
     # Monochrome - What kind of ancient-ass hardware are you running?
@@ -91,20 +88,13 @@ LOADAVG=(substr($0, RSTART,RLENGTH+10));
 # Split the string into the three necessary pieces
 split(LOADAVG, ARRAY_LOADAVG," ");
 
-}
-{
-
 # Determine cores and re-evaluate the load averages:
 ONE_LOADAVG = ARRAY_LOADAVG[1] / AWK_CORES;
 FIVE_LOADAVG = ARRAY_LOADAVG[2] / AWK_CORES;
 FIFTEEN_LOADAVG = ARRAY_LOADAVG[3] / AWK_CORES;
 
-# Test Colors:
-print "AWK_COLORS is: "AWK_COLORS
-
 # Set Color and Load Average values into independent arrays:
-if (AWK_COLORS = "256") {  
-    print "In 256 if"
+if (AWK_COLORS == "256") {  
     FG_ESCAPE_SEQUENCE="38;05;"
     BG_ESCAPE_SEQUENCE="48;05;"
     # Set Foreground Color Values:
@@ -174,7 +164,7 @@ if (AWK_COLORS = "256") {
     ARRAY_LOADAVG_VALUES[20]="4.75" 
     ARRAY_LOADAVG_VALUES[21]="5.00" 
     }
-else if (AWK_COLORS = 88) {
+else if (AWK_COLORS == 88) {
     FG_ESCAPE_SEQUENCE="38;05;"
     BG_ESCAPE_SEQUENCE="48;05;"
     # Set Foreground Color Values:
@@ -244,7 +234,7 @@ else if (AWK_COLORS = 88) {
     ARRAY_LOADAVG_VALUES[20] = 4.75 
     ARRAY_LOADAVG_VALUES[21] = 5.00 
     }
-else if (AWK_COLORS = "8") {
+else if (AWK_COLORS == "8") {
     FG_ESCAPE_SEQUENCE=""
     BG_ESCAPE_SEQUENCE=""
     # Set Foreground Color Values:
@@ -275,19 +265,19 @@ else {
 # One Minute:
 for (i = 1; i <= length(ARRAY_LOADAVG_VALUES); i++) {
     if (ONE_LOADAVG >= ARRAY_LOADAVG_VALUES[i]) { 
-        ONE="\033["FG_ESCAPE_SEQUENCE""ARRAY_FG_COLORS[i]"m"ARRAY_LOADAVG[1]"\033["BG_ESCAPE_SEQUENCE""ARRAY_BG_COLORS[i]"m""\033[0m";
+        ONE="\033["FG_ESCAPE_SEQUENCE""ARRAY_FG_COLORS[i]"m""\033["BG_ESCAPE_SEQUENCE""ARRAY_BG_COLORS[i]"m"ARRAY_LOADAVG[1]"\033[0m";
     }
 }
 # Five Minute:
 for (i = 1; i <= length(ARRAY_LOADAVG_VALUES); i++) { 
     if (FIVE_LOADAVG >= ARRAY_LOADAVG_VALUES[i]) { 
-        FIVE="\033["FG_ESCAPE_SEQUENCE""ARRAY_FG_COLORS[i]"m"ARRAY_LOADAVG[2]"\033["BG_ESCAPE_SEQUENCE""ARRAY_BG_COLORS[i]"m""\033[0m";
+        FIVE="\033["FG_ESCAPE_SEQUENCE""ARRAY_FG_COLORS[i]"m""\033["BG_ESCAPE_SEQUENCE""ARRAY_BG_COLORS[i]"m"ARRAY_LOADAVG[2]"\033[0m";
     }
 }
 # Fifteen Minute:
 for (i = 1; i <= length(ARRAY_LOADAVG_VALUES); i++) { 
     if (FIFTEEN_LOADAVG >= ARRAY_LOADAVG_VALUES[i]) {
-        FIFTEEN="\033["FG_ESCAPE_SEQUENCE""ARRAY_FG_COLORS[i]"m"ARRAY_LOADAVG[3]"\033["BG_ESCAPE_SEQUENCE""ARRAY_BG_COLORS[i]"m""\033[0m";
+        FIFTEEN="\033["FG_ESCAPE_SEQUENCE""ARRAY_FG_COLORS[i]"m""\033["BG_ESCAPE_SEQUENCE""ARRAY_BG_COLORS[i]"m"ARRAY_LOADAVG[3]"\033[0m";
     }
 }
 
