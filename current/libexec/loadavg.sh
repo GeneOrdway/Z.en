@@ -244,11 +244,11 @@ else if (AWK_COLORS == "8") {
     ARRAY_FG_COLORS[4]="33"
     ARRAY_FG_COLORS[5]="31" 
     # Set Background Color Values:
-    ARRAY_BG_COLORS[1]="30"
-    ARRAY_BG_COLORS[2]="30"
-    ARRAY_BG_COLORS[3]="30"
-    ARRAY_BG_COLORS[4]="30"
-    ARRAY_BG_COLORS[5]="30"    
+    ARRAY_BG_COLORS[1]="40"
+    ARRAY_BG_COLORS[2]="40"
+    ARRAY_BG_COLORS[3]="40"
+    ARRAY_BG_COLORS[4]="40"
+    ARRAY_BG_COLORS[5]="40"    
     # Set Load Average Values:
     ARRAY_LOADAVG_VALUES[1]="0.00"
     ARRAY_LOADAVG_VALUES[2]="1.00"
