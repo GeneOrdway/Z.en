@@ -80,8 +80,8 @@ fi
 # Get the load averages:
 OUTPUT=`$LOADAVG | $AWK -v AWK_COLORS=$TERM_COLORS -v AWK_CORES=$CORES '
 match($0,/[0-9]\.([0-9]{2})/) {
-LOADAVG=(substr($0, RSTART,RLENGTH+10));
-# Matches the regular expression pattern for #.## and copies the 10 spaces
+LOADAVG=(substr($0, RSTART,RLENGTH+15));
+# Matches the regular expression pattern for #.## and copies the 15 spaces
 # from the first pattern match to the last entry. Then stores that to
 # variable LOADAVG.
 
