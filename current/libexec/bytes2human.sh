@@ -58,7 +58,7 @@ if [ $DEBUG_FLAG -eq 0 ]; then
     $PRINTF "CURRENT_STEP is: $CURRENT_STEP\n"
     $PRINTF "NEXT_STEP is: $NEXT_STEP\n"
     $PRINTF "ARRAY_FILE_SIZES[$CURRENT_STEP] is: ${ARRAY_FILE_SIZES[$CURRENT_STEP]}\n"
-    $PRINTF "X-----\n"
+    $PRINTF "\n"
 fi
 
 # I couldn't figure out the logic to get this to work. Tried another way.
@@ -67,14 +67,14 @@ while [ $CURRENT_STEP -ne $NEXT_STEP ]
 do 
 
     # Need to convert this to use bc because of floating point numbers.
-    if [ ${ARRAY_FILE_SIZES[$CURRENT_STEP]} -ge 1024 ]; then
+    if [ "`echo ${ARRAY_FILE_SIZES[$CURRENT_STEP]} '>=' 1024 | $BC`" -eq 1 ]; then
         # We need to use bc because we require floating point numbers.
         ARRAY_FILE_SIZES[$NEXT_STEP]=`$PRINTF "scale=2; ${ARRAY_FILE_SIZES[$CURRENT_STEP]} / 1024 \n" | $BC`
 
         if [ $DEBUG_FLAG -eq 0 ]; then
             $PRINTF "ARRAY_FILE_SIZES[$CURRENT_STEP] is: ${ARRAY_FILE_SIZES[$CURRENT_STEP]} \n"
             $PRINTF "ARRAY_FILE_SIZES[$NEXT_STEP] is: ${ARRAY_FILE_SIZES[$NEXT_STEP]} \n"
-            $PRINTF "X-----\n"
+            $PRINTF "\n"
         fi 
     
         # Increment NEXT_STEP
@@ -83,12 +83,18 @@ do
         if [ $DEBUG_FLAG -eq 0 ]; then
             $PRINTF "CURRENT_STEP is: $CURRENT_STEP\n"
             $PRINTF "NEXT_STEP is: $NEXT_STEP\n"
-            $PRINTF "X-----\n"
+            $PRINTF "\n"
         fi
 
     fi
     # Increment CURRENT_STEP
     ((CURRENT_STEP++))
+
+    if [ $DEBUG_FLAG -eq 0 ]; then
+        $PRINTF "CURRENT_STEP is: $CURRENT_STEP\n"
+        $PRINTF "NEXT_STEP is: $NEXT_STEP\n"
+        $PRINTF "\n"
+    fi
 
 done
 

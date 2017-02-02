@@ -26,6 +26,8 @@ BASE64="/usr/bin/base64"
 ###           ###
 FILE_SIZES_TOTAL_BYTES=0
 FILE_SIZES_TOTAL_HUMAN=0
+FILE_ICON="📄"
+DIRECTORY_ICON="📁"
 
 # Set input to a variable. 
 DIRECTORY=$1
@@ -103,6 +105,7 @@ if [[ "$OSTYPE" == "darwin"* ]]; then
 
     # If the Terminal is iTerm, use inline images. 
     if [ $TERM_PROGRAM == "iTerm.app" ]; then
+        # iTerm Color Output goes here.
         $PRINTF "iTerm!\n"
     fi
 
@@ -130,14 +133,14 @@ done
 echo "FILE_SIZES_TOTAL_BYTES is: $FILE_SIZES_TOTAL_BYTES"
 
 # Convert bytes to human-readable:
-#$BYTES2HUMAN $FILE_SIZES_TOTAL_BYTES
+#$FILE_SIZES_TOTAL_HUMAN=`$BYTES2HUMAN $FILE_SIZES_TOTAL_BYTES`
 
-
-#$PRINTF "$FILE_SIZES_TOTAL_HUMAN\n"
-#
 #for ((i=0; i<${#ARRAY_DIRECTORY_FILE_SIZES}; i++;)); do 
 #    DIRECTORY_SIZE="DIRECTORY_SIZE+ARRAY_DIRECTORY_FILE_SIZES[i]"
 #done
+
+# Final output:
+$PRINTF "$DIRECTORY_ICON $NUMBER_OF_DIRECTORIES $FILE_ICON $NUMBER_OF_FILES, $FILE_SIZES_TOTAL_HUMAN\n"
 
 exit 0
 # EOF
