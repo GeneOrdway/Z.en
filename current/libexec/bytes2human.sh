@@ -11,7 +11,7 @@
 # bytes2human.sh (numeric integer value)
 
 # Output Expected:
-# (numeric integer value)
+# (numeric floating point value)
 
 ###       ###
 ### TO DO ###
@@ -31,6 +31,7 @@ BC="/usr/bin/bc"
 DEBUG_FLAG=0
 CURRENT_STEP=0
 NEXT_STEP=1
+STEP=0
 
 ###        ###
 ### ARRAYS ###
@@ -61,15 +62,16 @@ if [ $DEBUG_FLAG -eq 0 ]; then
     $PRINTF "\n"
 fi
 
-# I couldn't figure out the logic to get this to work. Tried another way.
-##while [ ${ARRAY_FILE_SIZES[$CURRENT_STEP]} -ge 1024 ]
-while [ $CURRENT_STEP -ne $NEXT_STEP ]
+while [ "`echo ${ARRAY_FILE_SIZES[$CURRENT_STEP]} '>=' 1024 | $BC`" -eq 1 ] 
+#while [ $CURRENT_STEP -ne $NEXT_STEP ]
 do 
 
+    ARRAY_FILE_SIZES[$NEXT_STEP]=`$PRINTF "scale=2; ${ARRAY_FILE_SIZES[$CURRENT_STEP]} / 1024 \n" | $BC`
+
     # Need to convert this to use bc because of floating point numbers.
-    if [ "`echo ${ARRAY_FILE_SIZES[$CURRENT_STEP]} '>=' 1024 | $BC`" -eq 1 ]; then
+    #if [ "`echo ${ARRAY_FILE_SIZES[$CURRENT_STEP]} '>=' 1024 | $BC`" -eq 1 ]; then
         # We need to use bc because we require floating point numbers.
-        ARRAY_FILE_SIZES[$NEXT_STEP]=`$PRINTF "scale=2; ${ARRAY_FILE_SIZES[$CURRENT_STEP]} / 1024 \n" | $BC`
+        #ARRAY_FILE_SIZES[$NEXT_STEP]=`$PRINTF "scale=2; ${ARRAY_FILE_SIZES[$CURRENT_STEP]} / 1024 \n" | $BC`
 
         if [ $DEBUG_FLAG -eq 0 ]; then
             $PRINTF "ARRAY_FILE_SIZES[$CURRENT_STEP] is: ${ARRAY_FILE_SIZES[$CURRENT_STEP]} \n"
@@ -86,7 +88,7 @@ do
             $PRINTF "\n"
         fi
 
-    fi
+    #fi
     # Increment CURRENT_STEP
     ((CURRENT_STEP++))
 
