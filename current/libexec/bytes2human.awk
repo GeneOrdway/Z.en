@@ -40,32 +40,36 @@ for (i = 1; i < ARGC; i++) {
     }
 
 for (i = 1; i < ARGC; i++) {
-    if (ARGV[i]=="-d") {
+    if (ARGV[i]=="-d" || ARGV[i]=="--debug") {
         # Debug:
         NOISE_LEVEL=5
         print "debug"
         }
-    else if (ARGV[i]=="-v")  {
+    else if (ARGV[i]=="-v" || ARGV[i]=="--verbose")  {
         # Verbose:
         NOISE_LEVEL=4
         print "verbose"
         }
-    else if (ARGV[i]=="-q") {
+    else if (ARGV[i]=="-q" || ARGV[i]=="--quiet") {
         # Quiet:
         NOISE_LEVEL=2
         print "quiet"
         }
-    else if (ARGV[i]=="-s") {
+    else if (ARGV[i]=="-s" || ARGV[i]=="--silent") {
         # Silent: 
         NOISE_LEVEL=1
         print "silent"
         }
-    else if (ARGV[i]=="-h") {
+    else if (ARGV[i]=="-h" || ARGV[i]=="--help") {
         # Help
         print "help"
         show_help() 
+        exit 0
         }
-    else if (ARGV[i] ~ /^-./) {
+    else if (ARGV[i] ~ /^-./ || ARGV[i] ~ /^--./) {
+        # Need a better regular expression for POSIX arguments.
+        # This works, but it's ugly. Error message only outputs a single
+        # dash after the error, not the whole word.
         ERROR = sprintf("%s: Unrecognized option -- %c",
                 ARGV[0], substr(ARGV[i], 2, 1))
         print ERROR > "/dev/stderr"
@@ -74,9 +78,10 @@ for (i = 1; i < ARGC; i++) {
     else if (ARGV[i] ~ /^[0-9]*$/) {
         # Store arguments into a multidimensional array 
         ARRAY_FILE_SIZES[i] = ARGV[i]
-        print "ARRAY_FILE_SIZES[i] is: "ARRAY_FILE_SIZES[i]
+        print "ARRAY_FILE_SIZES["i"] is: "ARRAY_FILE_SIZES[i]
         }
     else {
+        # Check that this outputs the whole error message.
         ERROR = sprintf("%s: Invalid argument passed to script. Exiting.",
                 ARGV[0], substr(ARGV[i], 2, 1))
         print ERROR > "/dev/stderr"
@@ -91,7 +96,6 @@ print "Done"
 #    ARRAY_FILE_SIZES[i][i]=
 #    }
 
-} END {
 exit 0
 }
 #EOF
