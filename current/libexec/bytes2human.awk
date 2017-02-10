@@ -21,8 +21,10 @@
 
 # 1) - Finish help menu output 
 # 2) - Add debug info back into script. See bytes2human.awk in 'old' directory
-# 3) - Add ability to convert bits
-# 4) - 
+# 3) - Add additional error-checking for a few mistakes below and for values
+#       input larger than known labels.
+# 4) - Add ability to convert bits
+# 5) - 
 
 ###           ###
 ### FUNCTIONS ###
@@ -57,6 +59,8 @@ BEGIN {
 ###           ###
 ### VARIABLES ###
 ###           ###
+FILE_SIZES_LENGTH=0
+WALKER=1
 CURRENT_STEP=1
 NEXT_STEP=2
 NOISE_LEVEL=3
@@ -70,8 +74,9 @@ ARRAY_FILE_SIZE_LABELS[3]="MB"
 ARRAY_FILE_SIZE_LABELS[4]="GB"
 ARRAY_FILE_SIZE_LABELS[5]="TB"
 ARRAY_FILE_SIZE_LABELS[6]="PB"
-ARRAY_FILE_SIZE_LABELS[7]="YB"
-ARRAY_FILE_SIZE_LABELS[8]="EB"
+ARRAY_FILE_SIZE_LABELS[7]="EB"
+ARRAY_FILE_SIZE_LABELS[8]="ZB"
+ARRAY_FILE_SIZE_LABELS[10]="YB"
 
 ###      ###
 ### MAIN ###
@@ -110,6 +115,8 @@ for (i = 1; i < ARGC; i++) {
     else if (ARGV[i] ~ /^[0-9]*$/) {
         # Store arguments into a multidimensional array 
         ARRAY_FILE_SIZES[i,1] = ARGV[i]
+        # Increment the array's length counter
+        FILE_SIZES_LENGTH++
     }
     else {
         # Check that this outputs the whole error message.
@@ -121,7 +128,7 @@ for (i = 1; i < ARGC; i++) {
 }
 
 # Divide the current value by 1024 bytes to produce the next measurement.# 
-for (WAKLER = 1; WALKER <= length(ARRAY_FILE_SIZES[WALKER,1]); WALKER++) {
+for (i = 1; i <= FILE_SIZES_LENGTH; i++) {
     while (ARRAY_FILE_SIZES[WALKER,CURRENT_STEP]>=1024) {
         ARRAY_FILE_SIZES[WALKER,NEXT_STEP]=(ARRAY_FILE_SIZES[WALKER,CURRENT_STEP] / 1024)
         CURRENT_STEP++
@@ -131,38 +138,23 @@ for (WAKLER = 1; WALKER <= length(ARRAY_FILE_SIZES[WALKER,1]); WALKER++) {
     # Store sizes to an array, ARRAY_LARGEST_FILE_SIZES, for easier output later.
     ARRAY_LARGEST_FILE_SIZES[WALKER]=sprintf("%.2f %s", ARRAY_FILE_SIZES[WALKER,CURRENT_STEP], ARRAY_FILE_SIZE_LABELS[CURRENT_STEP])
 
-    # Reset CURRENT_STEP and NEXT_STEP for the next iteration.
+    # Iterate WALKER and reset CURRENT_STEP and NEXT_STEP for the next iteration.
+    WALKER++
     CURRENT_STEP=1   
     NEXT_STEP=2
 }
 
 # Print output in single line, with comma-separated values if more than one argument.
-LARGEST_FILE_SIZES_LENGTH=length(ARRAY_LARGEST_FILE_SIZES)+1
-for (i = 1; i <= LARGEST_FILE_SIZES_LENGTH; i++) { 
-MAX=(i+1)
-    print "i is: "i
-    print "ARRAY_LARGEST_FILE_SIZES length is: "length(ARRAY_LARGEST_FILE_SIZES)
-    print "ARRAY_LARGEST_FILE_SIZES["i"] is: "ARRAY_LARGEST_FILE_SIZES[i]
-#    if (i == 1) { 
-#        printf "%s", ARRAY_LARGEST_FILE_SIZES[i]
-#        print "first"
-#    }
-#    else if (MAX == length(ARRAY_LARGEST_FILE_SIZES[i])) { 
-#        printf "%s\n", ARRAY_LARGEST_FILE_SIZES[i]
-#        print "last"
-#    }
-#    else {
-#        printf "%s, ", ARRAY_LARGEST_FILE_SIZES[i]
-#        print "middle"
-#    }
-##    else if (length(ARRAY_LARGEST_FILE_SIZES) <= i) {
-##        printf "%s\n", ARRAY_LARGEST_FILE_SIZES[i]
-##        print "middle"
-##    }
-##    else {
-##        printf "%s, ", ARRAY_LARGEST_FILE_SIZES[i]
-##        print "end"
-##    }
+for (i = 1; i <= length(ARRAY_LARGEST_FILE_SIZES); i++) { 
+    if (1 == length(ARRAY_LARGEST_FILE_SIZES)) { 
+        printf "%s\n", ARRAY_LARGEST_FILE_SIZES[i]
+    }
+    else if (i == length(ARRAY_LARGEST_FILE_SIZES)) { 
+        printf "%s\n", ARRAY_LARGEST_FILE_SIZES[i]
+    }
+    else {
+        printf "%s, ", ARRAY_LARGEST_FILE_SIZES[i]
+    }
 }
 
 exit 0 }
