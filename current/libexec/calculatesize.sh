@@ -7,7 +7,10 @@
 ### TO DO ###
 ###       ###
 
-# 1) - 
+# 1) - Add support for iTerm graphical output on OS X.
+# 2) - Finish help menu output display.
+# 3) - Add support for checking programs.
+# 4) - 
 
 ###          ###
 ### PROGRAMS ###
@@ -18,7 +21,7 @@ STAT="/usr/bin/stat"
 PRINTF="/usr/bin/printf"
 BASENAME="/usr/bin/basename"
 DIRNAME="/usr/bin/dirname"
-BYTES2HUMAN="bytes2human.sh"
+BYTES2HUMAN="$HOME/.libexec/bytes2human.awk"
 BASE64="/usr/bin/base64"
 
 ###           ###
@@ -133,6 +136,7 @@ done
 echo "FILE_SIZES_TOTAL_BYTES is: $FILE_SIZES_TOTAL_BYTES"
 
 # Convert bytes to human-readable:
+$FILE_SIZES_TOTAL_HUMAN=$(eval $BYTES2HUMAN $FILE_SIZES_TOTAL_BYTES) 
 #$FILE_SIZES_TOTAL_HUMAN=`$BYTES2HUMAN $FILE_SIZES_TOTAL_BYTES`
 
 #for ((i=0; i<${#ARRAY_DIRECTORY_FILE_SIZES}; i++;)); do 
