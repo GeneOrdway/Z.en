@@ -38,7 +38,8 @@ DIRECTORY=$1
 ###        ###
 ### ARRAYS ###
 ###        ###
-ARRAY_DIRECTORY_FILE_SIZES=()
+ARRAY_FILE_SIZES=()
+ARRAY_SUBDIRECTORY_LIST=()
 
 ###           ###
 ### FUNCTIONS ###
@@ -103,8 +104,10 @@ fi
 # Determine the Operating System:
 # OS X
 if [[ "$OSTYPE" == "darwin"* ]]; then     
-    ARRAY_DIRECTORY_FILE_SIZES=(`$FIND $DIRECTORY/* -maxdepth 1 -prune -type f -print0 | $XARGS -0 $STAT -f '%z'`)
-    echo "ARRAY_DIRECTORY_FILE_SIZES is: ${ARRAY_DIRECTORY_FILE_SIZES[*]}"
+    ARRAY_FILE_SIZES=(`$FIND $DIRECTORY/* -maxdepth 1 -prune -type f -print0 | $XARGS -0 $STAT -f '%z'`)
+    ARRAY_SUBDIRECTORY_LIST=(`$FIND $DIRECTORY -maxdepth 1 -mindepth 1 -type d -exec $BASENAME {} \;`)
+    echo "ARRAY_FILE_SIZES is: ${ARRAY_FILE_SIZES[*]}"
+    echo "ARRAY_SUBDIRECTORY_LIST is: ${#ARRAY_SUBDIRECTORY_LIST[@]}"
 
     # If the Terminal is iTerm, use inline images. 
     if [ $TERM_PROGRAM == "iTerm.app" ]; then
@@ -114,34 +117,37 @@ if [[ "$OSTYPE" == "darwin"* ]]; then
 
 #FreeBSD
 elif [[ "$OSTYPE" == "freebsd"* ]]; then 
-    #ARRAY_DIRECTORY_FILE_SIZES=`$LS -Al | $AWK '!/\// {print $5}'`
-    ARRAY_DIRECTORY_FILE_SIZES=""
+    #ARRAY_FILE_SIZES=`$LS -Al | $AWK '!/\// {print $5}'`
+    ARRAY_FILE_SIZES=""
 # Linux
 elif [[ "$OSTYPE" == "linux-gnu" ]]; then
-    ARRAY_DIRECTORY_FILE_SIZES=""
+    ARRAY_FILE_SIZES=""
 else 
     fn_ERROR_MESSAGE "Could not determine Operating System. Exiting."
     exit 1
 fi
 
 # 
-NUMBER_OF_FILES=${#ARRAY_DIRECTORY_FILE_SIZES[@]}
+NUMBER_OF_FILES=${#ARRAY_FILE_SIZES[@]}
 $PRINTF "Number of files in $DIRECTORY: $NUMBER_OF_FILES\n"
 
+# 
+NUMBER_OF_DIRECTORIES=${#ARRAY_SUBDIRECTORY_LIST[@]}
+$PRINTF "Number of directories in $DIRECTORY: ${#ARRAY_SUBDIRECTORY_LIST[@]}\n"
+
 # Count up the bytes:
-for ((i=0; i<${#ARRAY_DIRECTORY_FILE_SIZES[@]}; i++)) do
-    FILE_SIZES_TOTAL_BYTES=$((FILE_SIZES_TOTAL_BYTES+ARRAY_DIRECTORY_FILE_SIZES[$i]))
+for ((i=0; i<${#ARRAY_FILE_SIZES[@]}; i++)) do
+    FILE_SIZES_TOTAL_BYTES=$((FILE_SIZES_TOTAL_BYTES+ARRAY_FILE_SIZES[$i]))
 done
 
 echo "FILE_SIZES_TOTAL_BYTES is: $FILE_SIZES_TOTAL_BYTES"
 
-# Convert bytes to human-readable:
-$FILE_SIZES_TOTAL_HUMAN=$(eval $BYTES2HUMAN $FILE_SIZES_TOTAL_BYTES) 
-#$FILE_SIZES_TOTAL_HUMAN=`$BYTES2HUMAN $FILE_SIZES_TOTAL_BYTES`
+echo "BYTES2HUMAN is: $BYTES2HUMAN"
 
-#for ((i=0; i<${#ARRAY_DIRECTORY_FILE_SIZES}; i++;)); do 
-#    DIRECTORY_SIZE="DIRECTORY_SIZE+ARRAY_DIRECTORY_FILE_SIZES[i]"
-#done
+# Convert bytes to human-readable:
+$FILE_SIZES_TOTAL_HUMAN="`sh $BYTES2HUMAN` $FILE_SIZES_TOTAL_BYTES"
+#$FILE_SIZES_TOTAL_HUMAN=$($BYTES2HUMAN $FILE_SIZES_TOTAL_BYTES) 
+#$FILE_SIZES_TOTAL_HUMAN=`$BYTES2HUMAN $FILE_SIZES_TOTAL_BYTES`
 
 # Final output:
 $PRINTF "$DIRECTORY_ICON $NUMBER_OF_DIRECTORIES $FILE_ICON $NUMBER_OF_FILES, $FILE_SIZES_TOTAL_HUMAN\n"
