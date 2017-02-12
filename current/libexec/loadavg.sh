@@ -10,7 +10,10 @@
 # 2) - Get rid of the pipe between OUTPUT and AWK. Change that to pass awk a
 #       shell variable for loadavg instead and adjust script accordingly.
 # 3) - Verify that all the proper error checking has been completed. 
-# 4) - 
+# 4) - Import color values to ARRAY_FG_COLORS and ARRAY_BG_COLORS through
+#       external configuration file.
+# 5) - Change escape sequence to support decimal, hex, and octal notation.
+# 6) - 
 
 ###          ###
 ### PROGRAMS ###
@@ -92,6 +95,12 @@ split(LOADAVG, ARRAY_LOADAVG," ");
 ONE_LOADAVG = ARRAY_LOADAVG[1] / AWK_CORES;
 FIVE_LOADAVG = ARRAY_LOADAVG[2] / AWK_CORES;
 FIFTEEN_LOADAVG = ARRAY_LOADAVG[3] / AWK_CORES;
+
+# Set main escape sequences
+# Hex: \x1b
+# Octal: \033
+# Decimal: \e
+ESCAPE_SEQUENCE="\033"
 
 # Set Color and Load Average values into independent arrays:
 if (AWK_COLORS == "256") {  
