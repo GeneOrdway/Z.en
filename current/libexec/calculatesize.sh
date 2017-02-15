@@ -47,7 +47,24 @@ ARRAY_SUBDIRECTORY_LIST=()
 
 # Show the Help menu:
 fn_SHOW_HELP() {
-    $PRINTF "HELP MENU:\n"
+    $PRINTF "$SCRIPTNAME Help:\r
+    \rUsage: $SCRIPTNAME [-dhqsv] [-a directory] [-b directory] [-f file]\r
+            \r
+\rOr with POSIX-style arguments:\r
+\rUsage: $SCRIPTNAME [--debug --help --quiet --silent --verbose]\r
+\r
+\rExample: $SCRIPTNAME -v -a /usr/local/bin /usr/local/sbin -b /bin \r
+\rOR
+\rExample: $SCRIPTNAME --verbose --pre-append /usr/local/sbin --post-append /bin \r
+\r
+\rGNU-STYLE:    | POSIX-STYLE:            | EXPLANATION:\r
+\r______________|_________________________|_______________________________________\r
+\r -d           | --debug                 | Debug output - Useful for scripting.\r
+\r -f file      | --file                  | Specify configuration file.\r
+\r -h           | --help                  | Print this help menu.\r
+\r -q           | --quiet                 | Quiet output - Errors messages only.\r
+\r -s           | --silent                | Silent output - No messages.\r
+\r -v           | --verbose               | Verbose output - See all messages. \n"
     exit 0
 }
 
@@ -145,7 +162,7 @@ echo "FILE_SIZES_TOTAL_BYTES is: $FILE_SIZES_TOTAL_BYTES"
 echo "BYTES2HUMAN is: $BYTES2HUMAN"
 
 # Convert bytes to human-readable:
-$FILE_SIZES_TOTAL_HUMAN="`sh $BYTES2HUMAN` $FILE_SIZES_TOTAL_BYTES"
+$FILE_SIZES_TOTAL_HUMAN=$("$BYTES2HUMAN $FILE_SIZES_TOTAL_BYTES")
 #$FILE_SIZES_TOTAL_HUMAN=$($BYTES2HUMAN $FILE_SIZES_TOTAL_BYTES) 
 #$FILE_SIZES_TOTAL_HUMAN=`$BYTES2HUMAN $FILE_SIZES_TOTAL_BYTES`
 
