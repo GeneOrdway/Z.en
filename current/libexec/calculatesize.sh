@@ -48,14 +48,14 @@ ARRAY_SUBDIRECTORY_LIST=()
 # Show the Help menu:
 fn_SHOW_HELP() {
     $PRINTF "$SCRIPTNAME Help:\r
-    \rUsage: $SCRIPTNAME [-dhqsv] [-a directory] [-b directory] [-f file]\r
+    \rUsage: $SCRIPTNAME [-dhqsv]\r
             \r
 \rOr with POSIX-style arguments:\r
-\rUsage: $SCRIPTNAME [--debug --help --quiet --silent --verbose]\r
+\rUsage: $SCRIPTNAME [--debug --help --quiet --silent --verbose] directory\r
 \r
-\rExample: $SCRIPTNAME -v -a /usr/local/bin /usr/local/sbin -b /bin \r
+\rExample: $SCRIPTNAME -v /usr/local/bin \r
 \rOR
-\rExample: $SCRIPTNAME --verbose --pre-append /usr/local/sbin --post-append /bin \r
+\rExample: $SCRIPTNAME --verbose /usr/local/sbin \r
 \r
 \rGNU-STYLE:    | POSIX-STYLE:            | EXPLANATION:\r
 \r______________|_________________________|_______________________________________\r
@@ -123,22 +123,23 @@ fi
 if [[ "$OSTYPE" == "darwin"* ]]; then     
     ARRAY_FILE_SIZES=(`$FIND $DIRECTORY/* -maxdepth 1 -prune -type f -print0 | $XARGS -0 $STAT -f '%z'`)
     ARRAY_SUBDIRECTORY_LIST=(`$FIND $DIRECTORY -maxdepth 1 -mindepth 1 -type d -exec $BASENAME {} \;`)
-    echo "ARRAY_FILE_SIZES is: ${ARRAY_FILE_SIZES[*]}"
-    echo "ARRAY_SUBDIRECTORY_LIST is: ${#ARRAY_SUBDIRECTORY_LIST[@]}"
+#    echo "ARRAY_FILE_SIZES is: ${ARRAY_FILE_SIZES[*]}"
+#    echo "ARRAY_SUBDIRECTORY_LIST is: ${#ARRAY_SUBDIRECTORY_LIST[@]}"
 
     # If the Terminal is iTerm, use inline images. 
-    if [ $TERM_PROGRAM == "iTerm.app" ]; then
+#    if [ $TERM_PROGRAM == "iTerm.app" ]; then
         # iTerm Color Output goes here.
-        $PRINTF "iTerm!\n"
-    fi
+#        $PRINTF "iTerm!\n"
+#    fi
 
 #FreeBSD
 elif [[ "$OSTYPE" == "freebsd"* ]]; then 
-    #ARRAY_FILE_SIZES=`$LS -Al | $AWK '!/\// {print $5}'`
-    ARRAY_FILE_SIZES=""
+    ARRAY_FILE_SIZES=(`$FIND $DIRECTORY/* -maxdepth 1 -prune -type f -print0 | $XARGS -0 $STAT -f '%z'`)
+    ARRAY_SUBDIRECTORY_LIST=(`$FIND $DIRECTORY -maxdepth 1 -mindepth 1 -type d -exec $BASENAME {} \;`)
 # Linux
 elif [[ "$OSTYPE" == "linux-gnu" ]]; then
     ARRAY_FILE_SIZES=""
+    ARRAY_SUBDIRECTORY_LIST=""
 else 
     fn_ERROR_MESSAGE "Could not determine Operating System. Exiting."
     exit 1
@@ -146,25 +147,25 @@ fi
 
 # 
 NUMBER_OF_FILES=${#ARRAY_FILE_SIZES[@]}
-$PRINTF "Number of files in $DIRECTORY: $NUMBER_OF_FILES\n"
+#$PRINTF "Number of files in $DIRECTORY: $NUMBER_OF_FILES\n"
 
 # 
 NUMBER_OF_DIRECTORIES=${#ARRAY_SUBDIRECTORY_LIST[@]}
-$PRINTF "Number of directories in $DIRECTORY: ${#ARRAY_SUBDIRECTORY_LIST[@]}\n"
+#$PRINTF "Number of directories in $DIRECTORY: ${#ARRAY_SUBDIRECTORY_LIST[@]}\n"
 
 # Count up the bytes:
 for ((i=0; i<${#ARRAY_FILE_SIZES[@]}; i++)) do
     FILE_SIZES_TOTAL_BYTES=$((FILE_SIZES_TOTAL_BYTES+ARRAY_FILE_SIZES[$i]))
 done
 
-echo "FILE_SIZES_TOTAL_BYTES is: $FILE_SIZES_TOTAL_BYTES"
+#echo "FILE_SIZES_TOTAL_BYTES is: $FILE_SIZES_TOTAL_BYTES"
 
-echo "BYTES2HUMAN is: $BYTES2HUMAN"
+#echo "BYTES2HUMAN is: $BYTES2HUMAN"
 
 # Convert bytes to human-readable:
-$FILE_SIZES_TOTAL_HUMAN=$("$BYTES2HUMAN $FILE_SIZES_TOTAL_BYTES")
-#$FILE_SIZES_TOTAL_HUMAN=$($BYTES2HUMAN $FILE_SIZES_TOTAL_BYTES) 
-#$FILE_SIZES_TOTAL_HUMAN=`$BYTES2HUMAN $FILE_SIZES_TOTAL_BYTES`
+FILE_SIZES_TOTAL_HUMAN=`$BYTES2HUMAN $FILE_SIZES_TOTAL_BYTES`
+
+#echo "FILE_SIZES_TOTAL_HUMAN is: $FILE_SIZES_TOTAL_HUMAN"
 
 # Final output:
 $PRINTF "$DIRECTORY_ICON $NUMBER_OF_DIRECTORIES $FILE_ICON $NUMBER_OF_FILES, $FILE_SIZES_TOTAL_HUMAN\n"
