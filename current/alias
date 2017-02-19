@@ -24,9 +24,9 @@ alias rd="rmdir"
 alias remove="rm"
 
 ## Listing Directories:
-alias list="ls -lap"
-alias la="ls -lap"
-alias dir="ls -lap"
+alias list="ls -lah"
+alias la="ls -lah"
+alias dir="ls -lah"
 
 # CPU Checking:
 alias top="top -ocpu -R -F -s 2 -n30"

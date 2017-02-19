@@ -20,7 +20,6 @@ XARGS="/usr/bin/xargs"
 STAT="/usr/bin/stat"
 PRINTF="/usr/bin/printf"
 BASENAME="/usr/bin/basename"
-DIRNAME="/usr/bin/dirname"
 BYTES2HUMAN="$HOME/.libexec/bytes2human.awk"
 BASE64="/usr/bin/base64"
 
@@ -31,6 +30,7 @@ FILE_SIZES_TOTAL_BYTES=0
 FILE_SIZES_TOTAL_HUMAN=0
 FILE_ICON="📄"
 DIRECTORY_ICON="📁"
+NOISE_LEVEL=3
 
 # Set input to a variable. 
 DIRECTORY=$1
@@ -60,12 +60,11 @@ fn_SHOW_HELP() {
 \rGNU-STYLE:    | POSIX-STYLE:            | EXPLANATION:\r
 \r______________|_________________________|_______________________________________\r
 \r -d           | --debug                 | Debug output - Useful for scripting.\r
-\r -f file      | --file                  | Specify configuration file.\r
 \r -h           | --help                  | Print this help menu.\r
 \r -q           | --quiet                 | Quiet output - Errors messages only.\r
 \r -s           | --silent                | Silent output - No messages.\r
 \r -v           | --verbose               | Verbose output - See all messages. \n"
-    exit 0
+exit 0
 }
 
 # Check for installed programs:
@@ -123,10 +122,8 @@ fi
 if [[ "$OSTYPE" == "darwin"* ]]; then     
     ARRAY_FILE_SIZES=(`$FIND $DIRECTORY/* -maxdepth 1 -prune -type f -print0 | $XARGS -0 $STAT -f '%z'`)
     ARRAY_SUBDIRECTORY_LIST=(`$FIND $DIRECTORY -maxdepth 1 -mindepth 1 -type d -exec $BASENAME {} \;`)
-#    echo "ARRAY_FILE_SIZES is: ${ARRAY_FILE_SIZES[*]}"
-#    echo "ARRAY_SUBDIRECTORY_LIST is: ${#ARRAY_SUBDIRECTORY_LIST[@]}"
-
-    # If the Terminal is iTerm, use inline images. 
+    
+# If the Terminal is iTerm, use inline images. 
 #    if [ $TERM_PROGRAM == "iTerm.app" ]; then
         # iTerm Color Output goes here.
 #        $PRINTF "iTerm!\n"
@@ -145,27 +142,28 @@ else
     exit 1
 fi
 
-# 
+# Count up the number of files: 
 NUMBER_OF_FILES=${#ARRAY_FILE_SIZES[@]}
-#$PRINTF "Number of files in $DIRECTORY: $NUMBER_OF_FILES\n"
 
-# 
+# Count up the number of directories: 
 NUMBER_OF_DIRECTORIES=${#ARRAY_SUBDIRECTORY_LIST[@]}
-#$PRINTF "Number of directories in $DIRECTORY: ${#ARRAY_SUBDIRECTORY_LIST[@]}\n"
 
 # Count up the bytes:
 for ((i=0; i<${#ARRAY_FILE_SIZES[@]}; i++)) do
     FILE_SIZES_TOTAL_BYTES=$((FILE_SIZES_TOTAL_BYTES+ARRAY_FILE_SIZES[$i]))
 done
 
-#echo "FILE_SIZES_TOTAL_BYTES is: $FILE_SIZES_TOTAL_BYTES"
-
-#echo "BYTES2HUMAN is: $BYTES2HUMAN"
-
-# Convert bytes to human-readable:
+# Convert bytes to a more human-readable format:
 FILE_SIZES_TOTAL_HUMAN=`$BYTES2HUMAN $FILE_SIZES_TOTAL_BYTES`
 
-#echo "FILE_SIZES_TOTAL_HUMAN is: $FILE_SIZES_TOTAL_HUMAN"
+# Debug
+if [[ $NOISE_LEVEL -eq 5 ]]; then 
+    $PRINTF "Number of files in $DIRECTORY: $NUMBER_OF_FILES\n"
+    $PRINTF "Number of directories in $DIRECTORY: ${#ARRAY_SUBDIRECTORY_LIST[@]}\n"
+    $PRINTF "BYTES2HUMAN script location is: $BYTES2HUMAN\n"
+    $PRINTF "FILE_SIZES_TOTAL_BYTES is: $FILE_SIZES_TOTAL_BYTES\n"
+    $PRINTF "FILE_SIZES_TOTAL_HUMAN is: $FILE_SIZES_TOTAL_HUMAN\n"
+fi
 
 # Final output:
 $PRINTF "$DIRECTORY_ICON $NUMBER_OF_DIRECTORIES $FILE_ICON $NUMBER_OF_FILES, $FILE_SIZES_TOTAL_HUMAN\n"
