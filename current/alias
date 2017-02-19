@@ -24,12 +24,12 @@ alias rd="rmdir"
 alias remove="rm"
 
 ## Listing Directories:
-alias list="ls -lah"
-alias la="ls -lah"
-alias dir="ls -lah"
+alias list="ls -alFh"
+alias la="ls -alFh"
+alias dir="ls -alFh"
 
 # CPU Checking:
-alias top="top -ocpu -R -F -s 2 -n30"
+#alias top="top -ocpu -R -F -s 2 -n30"
 alias ps="ps -ax"
 #alias ps="ps -ale"
 
