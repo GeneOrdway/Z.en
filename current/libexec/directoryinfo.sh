@@ -122,7 +122,8 @@ fi
 if [[ "$OSTYPE" == "darwin"* ]]; then     
     ARRAY_FILE_SIZES=(`$FIND $DIRECTORY/* -maxdepth 1 -prune -type f -print0 | $XARGS -0 $STAT -f '%z'`)
     ARRAY_SUBDIRECTORY_LIST=(`$FIND $DIRECTORY -maxdepth 1 -mindepth 1 -type d -exec $BASENAME {} \;`)
-    
+    ARRAY_DIRECTORY_INFO=(`$STAT -r $DIRECTORY`)
+
 # If the Terminal is iTerm, use inline images. 
 #    if [ $TERM_PROGRAM == "iTerm.app" ]; then
         # iTerm Color Output goes here.
@@ -133,10 +134,12 @@ if [[ "$OSTYPE" == "darwin"* ]]; then
 elif [[ "$OSTYPE" == "freebsd"* ]]; then 
     ARRAY_FILE_SIZES=(`$FIND $DIRECTORY/* -maxdepth 1 -prune -type f -print0 | $XARGS -0 $STAT -f '%z'`)
     ARRAY_SUBDIRECTORY_LIST=(`$FIND $DIRECTORY -maxdepth 1 -mindepth 1 -type d -exec $BASENAME {} \;`)
+    ARRAY_DIRECTORY_INFO=(`$STAT -r $DIRECTORY`)
 # Linux
 elif [[ "$OSTYPE" == "linux-gnu" ]]; then
     ARRAY_FILE_SIZES=""
     ARRAY_SUBDIRECTORY_LIST=""
+    ARRAY_DIRECTORY_INFO=(`$STAT -s $DIRECTORY`)
 else 
     fn_ERROR_MESSAGE "Could not determine Operating System. Exiting."
     exit 1
@@ -156,7 +159,7 @@ done
 # Convert bytes to a more human-readable format:
 FILE_SIZES_TOTAL_HUMAN=`$BYTES2HUMAN $FILE_SIZES_TOTAL_BYTES`
 
-# Debug
+# Debugging information:
 if [[ $NOISE_LEVEL -eq 5 ]]; then 
     $PRINTF "Number of files in $DIRECTORY: $NUMBER_OF_FILES\n"
     $PRINTF "Number of directories in $DIRECTORY: ${#ARRAY_SUBDIRECTORY_LIST[@]}\n"
@@ -165,8 +168,12 @@ if [[ $NOISE_LEVEL -eq 5 ]]; then
     $PRINTF "FILE_SIZES_TOTAL_HUMAN is: $FILE_SIZES_TOTAL_HUMAN\n"
 fi
 
-# Final output:
+echo "Mode is: ${ARRAY_DIRECTORY_INFO[2]}"
+
+# Prints Directory and File count with file size:
 $PRINTF "$DIRECTORY_ICON $NUMBER_OF_DIRECTORIES $FILE_ICON $NUMBER_OF_FILES, $FILE_SIZES_TOTAL_HUMAN\n"
+
+
 
 exit 0
 # EOF

@@ -39,6 +39,8 @@ zshrc
 ###          ###
 ### PROGRAMS ###
 ###          ###
+BASENAME="/usr/bin/basename"
+DIRNAME="/usr/bin/dirname"
 CP="/bin/cp"
 MV="/bin/mv"
 LN="/bin/ln"
