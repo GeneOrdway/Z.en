@@ -10,7 +10,8 @@
 # 1) - Add support for iTerm graphical output on OS X.
 # 2) - Finish help menu output display.
 # 3) - Add support for checking programs.
-# 4) - 
+# 4) - Add additional directory information to output.
+# 5) - 
 
 ###          ###
 ### PROGRAMS ###
@@ -20,17 +21,22 @@ XARGS="/usr/bin/xargs"
 STAT="/usr/bin/stat"
 PRINTF="/usr/bin/printf"
 BASENAME="/usr/bin/basename"
-BYTES2HUMAN="$HOME/.libexec/bytes2human.awk"
+BYTES2HUMAN="$HOME/.bin/bytes2human.awk"
 BASE64="/usr/bin/base64"
 
 ###           ###
 ### VARIABLES ###
 ###           ###
+NOISE_LEVEL=3
 FILE_SIZES_TOTAL_BYTES=0
 FILE_SIZES_TOTAL_HUMAN=0
-FILE_ICON="📄"
-DIRECTORY_ICON="📁"
-NOISE_LEVEL=3
+ICON_FILE="📄"
+ICON_DIRECTORY="📁"
+ICON_USER="👤"
+ICON_GROUP="👥"
+ICON_PERMISSIONS="🔐"
+ICON_TIME_CLOCK="⏰"
+ICON_TIME_MODIFIED="🕘"
 
 # Set input to a variable. 
 DIRECTORY=$1
@@ -122,7 +128,7 @@ fi
 if [[ "$OSTYPE" == "darwin"* ]]; then     
     ARRAY_FILE_SIZES=(`$FIND $DIRECTORY/* -maxdepth 1 -prune -type f -print0 | $XARGS -0 $STAT -f '%z'`)
     ARRAY_SUBDIRECTORY_LIST=(`$FIND $DIRECTORY -maxdepth 1 -mindepth 1 -type d -exec $BASENAME {} \;`)
-    ARRAY_DIRECTORY_INFO=(`$STAT -r $DIRECTORY`)
+    ARRAY_DIRECTORY_INFO=(`$STAT -f "%Sp %Su %Sg %Sm" -t "%b %e %Y %l:%M:%S %p" $DIRECTORY`)
 
 # If the Terminal is iTerm, use inline images. 
 #    if [ $TERM_PROGRAM == "iTerm.app" ]; then
@@ -134,7 +140,7 @@ if [[ "$OSTYPE" == "darwin"* ]]; then
 elif [[ "$OSTYPE" == "freebsd"* ]]; then 
     ARRAY_FILE_SIZES=(`$FIND $DIRECTORY/* -maxdepth 1 -prune -type f -print0 | $XARGS -0 $STAT -f '%z'`)
     ARRAY_SUBDIRECTORY_LIST=(`$FIND $DIRECTORY -maxdepth 1 -mindepth 1 -type d -exec $BASENAME {} \;`)
-    ARRAY_DIRECTORY_INFO=(`$STAT -r $DIRECTORY`)
+    ARRAY_DIRECTORY_INFO=(`$STAT -f "%Sp %Su %Sg %Sm" -t "%b %e %Y %l:%M:%S %p" $DIRECTORY`)
 # Linux
 elif [[ "$OSTYPE" == "linux-gnu" ]]; then
     ARRAY_FILE_SIZES=""
@@ -168,10 +174,27 @@ if [[ $NOISE_LEVEL -eq 5 ]]; then
     $PRINTF "FILE_SIZES_TOTAL_HUMAN is: $FILE_SIZES_TOTAL_HUMAN\n"
 fi
 
-echo "Mode is: ${ARRAY_DIRECTORY_INFO[2]}"
+# Assign input array names to variables for easier readability:
+PERMISSIONS="$ICON_PERMISSIONS ${ARRAY_DIRECTORY_INFO[0]}"
+USER_NAME="$ICON_USER ${ARRAY_DIRECTORY_INFO[1]}"
+USER_ID=""
+GROUP_NAME="$ICON_GROUP ${ARRAY_DIRECTORY_INFO[2]}"
+GROUP_ID=""
+TIME_ACCESS=""
+TIME_MODIFIED="$ICON_TIME_MODIFIED ${ARRAY_DIRECTORY_INFO[3]} ${ARRAY_DIRECTORY_INFO[4]} ${ARRAY_DIRECTORY_INFO[5]} ${ARRAY_DIRECTORY_INFO[6]} ${ARRAY_DIRECTORY_INFO[7]} ${ARRAY_DIRECTORY_INFO[8]}"
+TIME_CHANGE=""
 
+# Debugging information:
+#if [[ $NOISE_LEVEL -eq 5 ]]; then 
+    $PRINTF "Whole array is: ${ARRAY_DIRECTORY_INFO[*]}\n"
+    $PRINTF "Permissions is: $PERMISSIONS\n"
+    $PRINTF "USER_NAME is: $USER_NAME\n"
+    $PRINTF "GROUP_NAME is: $GROUP_NAME\n"
+    $PRINTF "TIME_MODIFIED is: $TIME_MODIFIED\n"
+#fi
+    
 # Prints Directory and File count with file size:
-$PRINTF "$DIRECTORY_ICON $NUMBER_OF_DIRECTORIES $FILE_ICON $NUMBER_OF_FILES, $FILE_SIZES_TOTAL_HUMAN\n"
+$PRINTF "$ICON_DIRECTORY $NUMBER_OF_DIRECTORIES $ICON_FILE $NUMBER_OF_FILES, $FILE_SIZES_TOTAL_HUMAN\n"
 
 
 

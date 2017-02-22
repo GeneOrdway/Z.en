@@ -136,7 +136,7 @@ for (i = 1; i <= FILE_SIZES_LENGTH; i++) {
     }
 
     # Store sizes to an array, ARRAY_LARGEST_FILE_SIZES, for easier output later.
-    ARRAY_LARGEST_FILE_SIZES[WALKER]=sprintf("%.2f %s", ARRAY_FILE_SIZES[WALKER,CURRENT_STEP], ARRAY_FILE_SIZE_LABELS[CURRENT_STEP])
+    ARRAY_LARGEST_FILE_SIZES[WALKER]=sprintf("%.2f%s", ARRAY_FILE_SIZES[WALKER,CURRENT_STEP], ARRAY_FILE_SIZE_LABELS[CURRENT_STEP])
 
     # Iterate WALKER and reset CURRENT_STEP and NEXT_STEP for the next iteration.
     WALKER++
