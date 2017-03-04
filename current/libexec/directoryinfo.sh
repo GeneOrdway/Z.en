@@ -187,41 +187,45 @@ for ((i=0; i < ${#ARRAY_ARGUMENTS[*]}; i++)) do
         # Check for ~ as home directory list, and make it valid.
     
     # Check for - here, then proceed with case statement.
-    if [[ "${ARRAY_ARGUMENTS[$i]}" =~ ^[-][-dhqsTv] ]]; then 
+    if [[ "${ARRAY_ARGUMENTS[$i]}" =~ ^[-][-abCcdEeGghilmPpqsUuv] ]]; then 
         case ${ARRAY_ARGUMENTS[$i]} in
+            *a* | --time-access) TIME_ACCESS_FLAG=0
+            ;;
+            *b* | --time-birth) TIME_BIRTH_FLAG=0
+            ;;
+            *C* | --condensed) CONDENSED_FLAG=0 
+            ;;
+            *c* | --time-change) TIME_CHANGE_FLAG=0
+            ;; 
             *d* | --debug) fnNOISE_LEVEL_TRIGGERED_CHECK; NOISE_LEVEL=5; NOISE_LEVEL_TRIGGERED=0
             ;;
-            *Gn* | --group-name)
+            *E* | --extended) EXTENDED_FLAG=0
             ;;
-            *Gi* | --group-id)
+            *e* | --icon-emoji) fnICON_CHECK; ICON_EMOJI_FLAG=0
+            ;;
+            *G* | --group-name)
+            ;;
+            *g* | --group-id)
             ;;
             *h* | --help) fnHELP; exit 0
             ;;
-            *Ie* | --icon-emoji) fnICON_CHECK; ICON_EMOJI_FLAG=0
+            *i* | --icon-image) fnICON_CHECK; ICON_IMAGE_FLAG=0
             ;;
-            *Ii* | --icon-image) fnICON_CHECK; ICON_IMAGE_FLAG=0
+            *l* | --icon-letter) fnICON_CHECK; ICON_LETTER_FLAG=0
             ;;
-            *Il* | --icon-letter) fnICON_CHECK; ICON_LETTER_FLAG=0
+            *m* | --time-modified) TIME_MODIFIED_FLAG=0 
             ;;
-            *Pl* | --permissions-long)
+            *P* | --permissions-long)
             ;;
-            *Pn* | --permissions-number)
+            *p* | --permissions-number)
             ;;
             *q* | --quiet) fnNOISE_LEVEL_TRIGGERED_CHECK; NOISE_LEVEL=2; NOISE_LEVEL_TRIGGERED=0
             ;;
             *s* | --silent) fnNOISE_LEVEL_TRIGGERED_CHECK; NOISE_LEVEL=1; NOISE_LEVEL_TRIGGERED=0
             ;;
-            *Ta* | --time-access) TIME_ACCESS_FLAG=0
+            *U* | --user-name)
             ;;
-            *TB* | --time-birth) TIME_BIRTH_FLAG=0
-            ;;
-            *Tc* | --time-change) TIME_CHANGE_FLAG=0
-            ;;
-            *Tm* | --time-modified) TIME_MODIFIED_FLAG=0 
-            ;;
-            *Un* | --user-name)
-            ;;
-            *Ui* | --user-id)
+            *u* | --user-id)
             ;;
             *v* | --verbose) fnNOISE_LEVEL_TRIGGERED_CHECK; NOISE_LEVEL=4; NOISE_LEVEL_TRIGGERED=0
             ;;
@@ -346,6 +350,15 @@ if [ $ICON_IMAGE_FLAG -eq 0 ]; then
     ICON_TIME=""
 fi
 
+# Permissions: 
+
+
+# User:
+
+
+# Group:
+
+
 # Old settings for TIME_* variables. These match commented-out 
 # STAT_TIME_ARGS above 
 #TIME_ACCESS="${ARRAY_DIRECTORY_INFO[6]} ${ARRAY_DIRECTORY_INFO[7]} ${ARRAY_DIRECTORY_INFO[8]} ${ARRAY_DIRECTORY_INFO[9]} ${ARRAY_DIRECTORY_INFO[10]}"
@@ -421,11 +434,11 @@ fi
 #FILE_SIZE_OUTPUT="$ICON_DIRECTORY $NUMBER_OF_DIRECTORIES $ICON_FILE $NUMBER_OF_FILES, $FILE_SIZES_TOTAL_HUMAN"
 #TIME_OUTPUT="$ICON_TIME $TIME_MODIFIED $ICON_TIME $TIME_BIRTH"
 ## Normal:
-PERMISSIONS_OUTPUT="$ICON_PERMISSIONS $PERMISSIONS_LONG"
-USER_OUTPUT="$ICON_USER $USER_NAME"
-GROUP_OUTPUT="$ICON_GROUP $GROUP_NAME"
-FILE_SIZE_OUTPUT="$ICON_DIRECTORY $NUMBER_OF_DIRECTORIES $ICON_FILE $NUMBER_OF_FILES, $FILE_SIZES_TOTAL_HUMAN"
-TIME_OUTPUT="$ICON_TIME $TIME_MODIFIED"
+PERMISSIONS_OUTPUT="$ICON_PERMISSIONS$PERMISSIONS_LONG"
+USER_OUTPUT="$ICON_USER$USER_NAME"
+GROUP_OUTPUT="$ICON_GROUP$GROUP_NAME"
+FILE_SIZE_OUTPUT="$ICON_DIRECTORY$NUMBER_OF_DIRECTORIES$ICON_FILE $NUMBER_OF_FILES, $FILE_SIZES_TOTAL_HUMAN"
+TIME_OUTPUT="$ICON_TIME$TIME_MODIFIED"
 ## Condensed:
 #PERMISSIONS_OUTPUT="$ICON_PERMISSIONS $PERMISSIONS_NUMBER"
 #USER_OUTPUT="$ICON_USER $USER_ID"
@@ -434,7 +447,7 @@ TIME_OUTPUT="$ICON_TIME $TIME_MODIFIED"
 #TIME_OUTPUT="$ICON_TIME $TIME_MODIFIED"
 
 # And finally, print the output:
-$PRINTF "$PERMISSIONS_OUTPUT$USER_OUTPUT$GROUP_OUTPUT$FILE_SIZE_OUTPUT$TIME_OUTPUT\n"
+$PRINTF "$PERMISSIONS_OUTPUT $USER_OUTPUT $GROUP_OUTPUT $FILE_SIZE_OUTPUT $TIME_OUTPUT\n"
 
 exit 0
 # EOF
