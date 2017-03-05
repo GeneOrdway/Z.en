@@ -38,16 +38,25 @@ declare -i NOISE_LEVEL=3  # NOISE_LEVEL Levels:
                           # 4 - Verbose 
                           # 5 - DebugFILE_SIZES_TOTAL_BYTES=0
 # Triggers: 
-declare -i NOISE_LEVEL_TRIGGERED=1 # False
+declare -i NOISE_LEVEL_TRIGGERED=1      # False
+declare -i ICON_TRIGGERED=1             # False
 
 # Flags:
-declare -i ICON_EMOJI_FLAG=1       # False
-declare -i ICON_LETTER_FLAG=1      # False
-declare -i ICON_IMAGE_FLAG=1       # False
-declare -i TIME_ACCESS_FLAG=1      # False
-declare -i TIME_CHANGE_FLAG=1      # False
-declare -i TIME_MODIFIED_FLAG=1    # False
-declare -i TIME_BIRTH_FLAG=1       # False
+declare -i ICON_EMOJI_FLAG=1            # False
+declare -i ICON_LETTER_FLAG=1           # False
+declare -i ICON_IMAGE_FLAG=1            # False
+declare -i PERMISSIONS_LONG_FLAG=1      # False
+declare -i PERMISSIONS_NUMBER_FLAG=1    # False
+declare -i USER_NAME_FLAG=1             # False
+declare -i USER_ID_FLAG=1               # False
+declare -i GROUP_NAME_FLAG=1            # False
+declare -i GROUP_ID_FLAG=1              # False
+declare -i TIME_ACCESS_FLAG=1           # False
+declare -i TIME_CHANGE_FLAG=1           # False
+declare -i TIME_MODIFIED_FLAG=1         # False
+declare -i TIME_BIRTH_FLAG=1            # False
+declare -i CONDENSED_FLAG=1             # False
+declare -i EXTENDED_FLAG=1              # False
 
 declare -i FILE_SIZES_TOTAL_BYTES=0
 FILE_SIZES_TOTAL_HUMAN="0"
@@ -64,8 +73,8 @@ STAT_TIME_ARGS="%b %e %Y %H:%M"
 # Spacing: 
 SPACER=" "
 # Icons:
-ICON_FILE=""
-ICON_DIRECTORY=""
+ICON_FILE="Files:"
+ICON_DIRECTORY="Directories:"
 ICON_USER=""
 ICON_GROUP=""
 ICON_PERMISSIONS=""
@@ -201,11 +210,11 @@ for ((i=0; i < ${#ARRAY_ARGUMENTS[*]}; i++)) do
             ;;
             *E* | --extended) EXTENDED_FLAG=0
             ;;
-            *e* | --icon-emoji) fnICON_CHECK; ICON_EMOJI_FLAG=0
+            *e* | --icon-emoji) fnICON_CHECK; ICON_EMOJI_FLAG=0; SPACER=""
             ;;
-            *G* | --group-name)
+            *G* | --group-name) GROUP_NAME_FLAG=0
             ;;
-            *g* | --group-id)
+            *g* | --group-id) GROUP_ID_FLAG=0
             ;;
             *h* | --help) fnHELP; exit 0
             ;;
@@ -215,17 +224,17 @@ for ((i=0; i < ${#ARRAY_ARGUMENTS[*]}; i++)) do
             ;;
             *m* | --time-modified) TIME_MODIFIED_FLAG=0 
             ;;
-            *P* | --permissions-long)
+            *P* | --permissions-long) PERMISSIONS_LONG_FLAG=0
             ;;
-            *p* | --permissions-number)
+            *p* | --permissions-number) PERMISSIONS_NUMBER_FLAG=0
             ;;
             *q* | --quiet) fnNOISE_LEVEL_TRIGGERED_CHECK; NOISE_LEVEL=2; NOISE_LEVEL_TRIGGERED=0
             ;;
             *s* | --silent) fnNOISE_LEVEL_TRIGGERED_CHECK; NOISE_LEVEL=1; NOISE_LEVEL_TRIGGERED=0
             ;;
-            *U* | --user-name)
+            *U* | --user-name) USER_NAME_FLAG=0
             ;;
-            *u* | --user-id)
+            *u* | --user-id) USER_ID_FLAG=0
             ;;
             *v* | --verbose) fnNOISE_LEVEL_TRIGGERED_CHECK; NOISE_LEVEL=4; NOISE_LEVEL_TRIGGERED=0
             ;;
@@ -323,21 +332,21 @@ fi
 #
 # Icons - Emoji:
 if [ $ICON_EMOJI_FLAG -eq 0 ]; then
-    ICON_FILE="📄"
-    ICON_DIRECTORY="📁"
-    ICON_USER="👤"
-    ICON_GROUP="👥"
-    ICON_PERMISSIONS="🔐"
-    ICON_TIME="🕘"
+    ICON_FILE="📄 "
+    ICON_DIRECTORY="📁 "
+    ICON_USER="👤 "
+    ICON_GROUP="👥 "
+    ICON_PERMISSIONS="🔐 "
+    ICON_TIME="🕘 "
 fi
 # Icons - Letter:
 if [ $ICON_LETTER_FLAG -eq 0 ]; then
-    ICON_FILE="F: "
-    ICON_DIRECTORY="D: "
-    ICON_USER="U: "
-    ICON_GROUP="G: "
-    ICON_PERMISSIONS="P: "
-    ICON_TIME="T: "
+    ICON_FILE="F:"
+    ICON_DIRECTORY="D:"
+    ICON_USER="U:"
+    ICON_GROUP="G:"
+    ICON_PERMISSIONS="P:"
+    ICON_TIME="T:"
 fi
 # Icons - Image:
 # Note: This is only supported under OS X with iTerm 2.
@@ -424,30 +433,26 @@ if [ $NOISE_LEVEL -eq 5 ]; then
     $PRINTF "DEBUG - TIME_BIRTH is: $TIME_BIRTH\n"
     $PRINTF "DEBUG - CURRENT_YEAR is: $CURRENT_YEAR\n"
     $PRINTF "DEBUG - Stat year is: ${ARRAY_DIRECTORY_INFO[12]}\n"
+    $PRINTF "DEBUG - ICON_PERMISSIONS is: $ICON_PERMISSIONS\n"
+    $PRINTF "DEBUG - ICON_USER is: $ICON_USER\n"
+    $PRINTF "DEBUG - ICON_GROUP is: $ICON_GROUP\n"
+    $PRINTF "DEBUG - ICON_DIRECTORY is: $ICON_DIRECTORY\n"
+    $PRINTF "DEBUG - ICON_FILE is: $ICON_FILE\n"
+    $PRINTF "DEBUG - ICON_TIME is: $ICON_TIME\n"
 fi
 
 # Standardize the output:
-## Extended:
-#PERMISSIONS_OUTPUT="$ICON_PERMISSIONS $PERMISSIONS_LONG($PERMISSIONS_NUMBER)"
-#USER_OUTPUT="$ICON_USER $USER_NAME($USER_ID)"
-#GROUP_OUTPUT="$ICON_GROUP $GROUP_NAME($GROUP_ID)"
-#FILE_SIZE_OUTPUT="$ICON_DIRECTORY $NUMBER_OF_DIRECTORIES $ICON_FILE $NUMBER_OF_FILES, $FILE_SIZES_TOTAL_HUMAN"
-#TIME_OUTPUT="$ICON_TIME $TIME_MODIFIED $ICON_TIME $TIME_BIRTH"
-## Normal:
+#PERMISSIONS_OUTPUT="$ICON_PERMISSIONS$PERMISSIONS_LONG($PERMISSIONS_NUMBER)"
+#USER_OUTPUT="$ICON_USER$USER_NAME($USER_ID)"
+#GROUP_OUTPUT="$ICON_GROUP$GROUP_NAME($GROUP_ID)"
 PERMISSIONS_OUTPUT="$ICON_PERMISSIONS$PERMISSIONS_LONG"
 USER_OUTPUT="$ICON_USER$USER_NAME"
 GROUP_OUTPUT="$ICON_GROUP$GROUP_NAME"
-FILE_SIZE_OUTPUT="$ICON_DIRECTORY$NUMBER_OF_DIRECTORIES$ICON_FILE $NUMBER_OF_FILES, $FILE_SIZES_TOTAL_HUMAN"
-TIME_OUTPUT="$ICON_TIME$TIME_MODIFIED"
-## Condensed:
-#PERMISSIONS_OUTPUT="$ICON_PERMISSIONS $PERMISSIONS_NUMBER"
-#USER_OUTPUT="$ICON_USER $USER_ID"
-#GROUP_OUTPUT="$ICON_GROUP $GROUP_ID"
-#FILE_SIZE_OUTPUT="$ICON_DIRECTORY $NUMBER_OF_DIRECTORIES $ICON_FILE $NUMBER_OF_FILES, $FILE_SIZES_TOTAL_HUMAN"
-#TIME_OUTPUT="$ICON_TIME $TIME_MODIFIED"
+FILE_SIZE_OUTPUT="$ICON_DIRECTORY$NUMBER_OF_DIRECTORIES$SPACER$ICON_FILE$NUMBER_OF_FILES, $FILE_SIZES_TOTAL_HUMAN"
+TIME_OUTPUT="$ICON_TIME$TIME_MODIFIED $ICON_TIME$TIME_BIRTH"
 
 # And finally, print the output:
-$PRINTF "$PERMISSIONS_OUTPUT $USER_OUTPUT $GROUP_OUTPUT $FILE_SIZE_OUTPUT $TIME_OUTPUT\n"
+$PRINTF "$PERMISSIONS_OUTPUT$SPACER$USER_OUTPUT$SPACER$GROUP_OUTPUT$SPACER$FILE_SIZE_OUTPUT$SPACER$TIME_OUTPUT\n"
 
 exit 0
 # EOF
