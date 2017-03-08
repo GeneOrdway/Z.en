@@ -99,22 +99,39 @@ declare -a ARRAY_DIRECTORY_INFO=()
 # Show the Help menu:
 fn_SHOW_HELP() {
     $PRINTF "$SCRIPTNAME Help:\r
-    \rUsage: $SCRIPTNAME [-dhqsv]\r
+    \rUsage: $SCRIPTNAME [-abCcdEeGghilmPpqsUuv]\r
             \r
 \rOr with POSIX-style arguments:\r
-\rUsage: $SCRIPTNAME [--debug --help --quiet --silent --verbose] directory\r
+\rUsage: $SCRIPTNAME [--debug --group-name --group-id --help --icon-emoji --icon-image\r 
+\r          --icon-letter --permission-long --permissions-id --quiet --silent --time-access\r 
+\r          --time-birth --time-change --time-modified --user-name --user-id --verbose] directory\r
 \r
 \rExample: $SCRIPTNAME -v /usr/local/bin \r
 \rOR
 \rExample: $SCRIPTNAME --verbose /usr/local/sbin \r
 \r
-\rGNU-STYLE:    | POSIX-STYLE:            | EXPLANATION:\r
-\r______________|_________________________|_______________________________________\r
-\r -d           | --debug                 | Debug output - Useful for scripting.\r
-\r -h           | --help                  | Print this help menu.\r
-\r -q           | --quiet                 | Quiet output - Errors messages only.\r
-\r -s           | --silent                | Silent output - No messages.\r
-\r -v           | --verbose               | Verbose output - See all messages. \n"
+\rGNU-STYLE: | POSIX-STYLE:         | EXPLANATION:\r
+\r___________|______________________|_____________________________________________\r
+\r -a        | --time-access        | 
+\r -b        | --time-birth         | 
+\r -C        | --format-condensed   | 
+\r -c        | --time-change        | 
+\r -d        | --debug              | Debug output - Useful for scripting.\r
+\r -E        | --format-extended    | 
+\r -e        | --icon-emoji         | 
+\r -G        | --group-name         | 
+\r -g        | --group-id           | 
+\r -h        | --help               | Print this help menu.\r
+\r -i        | --icon-image         | 
+\r -l        | --icon-letter        | 
+\r -m        | --time-modified      | 
+\r -P        | --permissions-long   | 
+\r -p        | --permissions-number | 
+\r -q        | --quiet              | Quiet output - Errors messages only.\r
+\r -s        | --silent             | Silent output - No messages.\r
+\r -U        | --user-name          | 
+\r -u        | --user-id            | 
+\r -v        | --verbose            | Verbose output - See all messages. \n"
 exit 0
 }
 
@@ -217,13 +234,13 @@ for ((i=0; i < ${#ARRAY_ARGUMENTS[*]}; i++)) do
             ;;
             *b* | --time-birth) TIME_BIRTH_FLAG=0
             ;;
-            *C* | --condensed) fnFORMAT_CHECK; CONDENSED_FLAG=0; FORMAT_TRIGGERED=0 
+            *C* | --format-condensed) fnFORMAT_CHECK; CONDENSED_FLAG=0; FORMAT_TRIGGERED=0 
             ;;
             *c* | --time-change) TIME_CHANGE_FLAG=0
             ;; 
             *d* | --debug) fnNOISE_LEVEL_TRIGGERED_CHECK; NOISE_LEVEL=5; NOISE_LEVEL_TRIGGERED=0
             ;;
-            *E* | --extended) fnFORMAT_CHECK; EXTENDED_FLAG=0; FORMAT_TRIGGERED=0
+            *E* | --format-extended) fnFORMAT_CHECK; EXTENDED_FLAG=0; FORMAT_TRIGGERED=0
             ;;
             *e* | --icon-emoji) fnICON_CHECK; ICON_EMOJI_FLAG=0; ICON_TRIGGERED=0; SPACER=""
             ;;
