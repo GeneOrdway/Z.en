@@ -40,6 +40,7 @@ declare -i NOISE_LEVEL=3  # NOISE_LEVEL Levels:
 # Triggers: 
 declare -i NOISE_LEVEL_TRIGGERED=1      # False
 declare -i ICON_TRIGGERED=1             # False
+declare -i FORMAT_TRIGGERED=1           # False
 
 # Flags:
 declare -i ICON_EMOJI_FLAG=1            # False
@@ -73,12 +74,15 @@ STAT_TIME_ARGS="%b %e %Y %H:%M"
 # Spacing: 
 SPACER=" "
 # Icons:
-ICON_FILE="Files:"
-ICON_DIRECTORY="Directories:"
+ICON_FILE=""
+ICON_DIRECTORY=""
 ICON_USER=""
 ICON_GROUP=""
 ICON_PERMISSIONS=""
-ICON_TIME=""
+ICON_TIME_ACCESS=""
+ICON_TIME_MODIFIED=""
+ICON_TIME_CHANGE=""
+ICON_TIME_BIRTH=""
 
 ###        ###
 ### ARRAYS ###
@@ -134,10 +138,21 @@ fnNOISE_LEVEL_TRIGGERED_CHECK() {
     fi
 }
 
+# Check to make sure ICON_CHECK_TRIGGERED hasn't already been triggered.
 fnICON_CHECK() {
     if [ $ICON_TRIGGERED -eq 0 ]; then
         if [ $NOISE_LEVEL -ge 2 ]; then
             fn_ERROR_MESSAGE "Program cannot have multiple types of icons selected."
+        fi
+        exit 1
+    fi
+}
+
+# Check to make sure FORMAT_TRIGGERED hasn't already been triggered.
+fnFORMAT_CHECK() {
+    if [ $FORMAT_TRIGGERED -eq 0 ]; then
+        if [ $NOISE_LEVEL -ge 2 ]; then
+            fn_ERROR_MESSAGE "Program cannot have multiple format options selected."
         fi
         exit 1
     fi
@@ -202,15 +217,15 @@ for ((i=0; i < ${#ARRAY_ARGUMENTS[*]}; i++)) do
             ;;
             *b* | --time-birth) TIME_BIRTH_FLAG=0
             ;;
-            *C* | --condensed) CONDENSED_FLAG=0 
+            *C* | --condensed) fnFORMAT_CHECK; CONDENSED_FLAG=0; FORMAT_TRIGGERED=0 
             ;;
             *c* | --time-change) TIME_CHANGE_FLAG=0
             ;; 
             *d* | --debug) fnNOISE_LEVEL_TRIGGERED_CHECK; NOISE_LEVEL=5; NOISE_LEVEL_TRIGGERED=0
             ;;
-            *E* | --extended) EXTENDED_FLAG=0
+            *E* | --extended) fnFORMAT_CHECK; EXTENDED_FLAG=0; FORMAT_TRIGGERED=0
             ;;
-            *e* | --icon-emoji) fnICON_CHECK; ICON_EMOJI_FLAG=0; SPACER=""
+            *e* | --icon-emoji) fnICON_CHECK; ICON_EMOJI_FLAG=0; ICON_TRIGGERED=0; SPACER=""
             ;;
             *G* | --group-name) GROUP_NAME_FLAG=0
             ;;
@@ -218,9 +233,9 @@ for ((i=0; i < ${#ARRAY_ARGUMENTS[*]}; i++)) do
             ;;
             *h* | --help) fnHELP; exit 0
             ;;
-            *i* | --icon-image) fnICON_CHECK; ICON_IMAGE_FLAG=0
+            *i* | --icon-image) fnICON_CHECK; ICON_IMAGE_FLAG=0; ICON_IMAGE_FLAG=0
             ;;
-            *l* | --icon-letter) fnICON_CHECK; ICON_LETTER_FLAG=0
+            *l* | --icon-letter) fnICON_CHECK; ICON_LETTER_FLAG=0; ICON_TRIGGERED=0
             ;;
             *m* | --time-modified) TIME_MODIFIED_FLAG=0 
             ;;
@@ -282,9 +297,9 @@ elif [[ "$OSTYPE" == "freebsd"* ]]; then
     CURRENT_YEAR=`$DATE +%Y`
 # Linux
 elif [[ "$OSTYPE" == "linux-gnu" ]]; then
-    ARRAY_FILE_SIZES=()
-    ARRAY_SUBDIRECTORY_LIST=()
-    ARRAY_DIRECTORY_INFO=(`$STAT -s $DIRECTORY`)
+    ARRAY_FILE_SIZES=(`$FIND $DIRECTORY/* -maxdepth 1 -prune -type f -print0 | $XARGS -0 $STAT -f '%z'`)
+    ARRAY_SUBDIRECTORY_LIST=(`$FIND $DIRECTORY -maxdepth 1 -mindepth 1 -type d -exec $BASENAME {} \;`)
+    ARRAY_DIRECTORY_INFO=(`$STAT -f "%Sp %#p %Su %u %Sg %g %Sa %Sm %Sc %SB" -t "$STAT_TIME_ARGS" $DIRECTORY`)
     CURRENT_YEAR=`$DATE +%Y`
 else 
     fn_ERROR_MESSAGE "Could not determine Operating System. Exiting."
@@ -314,14 +329,7 @@ if [ $NOISE_LEVEL -eq 5 ]; then
     $PRINTF "DEBUG - FILE_SIZES_TOTAL_HUMAN is: $FILE_SIZES_TOTAL_HUMAN\n"
 fi
 
-# Assign input array names to variables for easier readability:
-PERMISSIONS_LONG="${ARRAY_DIRECTORY_INFO[0]}"
-PERMISSIONS_NUMBER="${ARRAY_DIRECTORY_INFO[1]:(-3)}"
-USER_NAME="${ARRAY_DIRECTORY_INFO[2]}"
-USER_ID="${ARRAY_DIRECTORY_INFO[3]}"
-GROUP_NAME="${ARRAY_DIRECTORY_INFO[4]}"
-GROUP_ID="${ARRAY_DIRECTORY_INFO[5]}"
-
+# Debugging Information:
 if [ $NOISE_LEVEL -eq 5 ]; then
     TIME_ACCESS="${ARRAY_DIRECTORY_INFO[6]} ${ARRAY_DIRECTORY_INFO[7]} ${ARRAY_DIRECTORY_INFO[8]} ${ARRAY_DIRECTORY_INFO[9]}"
     TIME_MODIFIED="${ARRAY_DIRECTORY_INFO[10]} ${ARRAY_DIRECTORY_INFO[11]} ${ARRAY_DIRECTORY_INFO[12]} ${ARRAY_DIRECTORY_INFO[13]}"
@@ -329,7 +337,7 @@ if [ $NOISE_LEVEL -eq 5 ]; then
     TIME_BIRTH="${ARRAY_DIRECTORY_INFO[18]} ${ARRAY_DIRECTORY_INFO[19]} ${ARRAY_DIRECTORY_INFO[20]} ${ARRAY_DIRECTORY_INFO[21]}"
 fi
 
-#
+# Assign input array names to variables for easier readability:
 # Icons - Emoji:
 if [ $ICON_EMOJI_FLAG -eq 0 ]; then
     ICON_FILE="📄 "
@@ -337,8 +345,12 @@ if [ $ICON_EMOJI_FLAG -eq 0 ]; then
     ICON_USER="👤 "
     ICON_GROUP="👥 "
     ICON_PERMISSIONS="🔐 "
-    ICON_TIME="🕘 "
+    ICON_TIME_ACCESS="🕘 "
+    ICON_TIME_MODIFIED="🕘 "
+    ICON_TIME_CHANGE="🕘 "
+    ICON_TIME_BIRTH="🕘 "
 fi
+
 # Icons - Letter:
 if [ $ICON_LETTER_FLAG -eq 0 ]; then
     ICON_FILE="F:"
@@ -346,8 +358,12 @@ if [ $ICON_LETTER_FLAG -eq 0 ]; then
     ICON_USER="U:"
     ICON_GROUP="G:"
     ICON_PERMISSIONS="P:"
-    ICON_TIME="T:"
+    ICON_TIME_ACCESS="Ta:"
+    ICON_TIME_MODIFIED="Tm:"
+    ICON_TIME_CHANGE="Tc:"
+    ICON_TIME_BIRTH="Tb:"
 fi
+    
 # Icons - Image:
 # Note: This is only supported under OS X with iTerm 2.
 if [ $ICON_IMAGE_FLAG -eq 0 ]; then
@@ -356,17 +372,70 @@ if [ $ICON_IMAGE_FLAG -eq 0 ]; then
     ICON_USER=""
     ICON_GROUP=""
     ICON_PERMISSIONS=""
-    ICON_TIME=""
+    ICON_TIME_ACCESS=""
+    ICON_TIME_MODIFIED=""
+    ICON_TIME_CHANGE=""
+    ICON_TIME_BIRTH=""
 fi
 
-# Permissions: 
+# Icons - None:
+if [[ $ICON_EMOJI_FLAG -eq 1 && $ICON_LETTER_FLAG -eq 1 && $ICON_IMAGE_FLAG -eq 1 ]]; then
+    ICON_FILE="Files:"
+    ICON_DIRECTORY="Directories:"
+    ICON_USER=" "
+    ICON_GROUP=" "
+    ICON_PERMISSIONS=""
+    ICON_TIME_ACCESS=" "
+    ICON_TIME_MODIFIED=" "
+    ICON_TIME_CHANGE=" "
+    ICON_TIME_BIRTH=" "
+fi
 
+# Permissions long format: 
+if [ $PERMISSIONS_LONG_FLAG -eq 0 ]; then
+    PERMISSIONS_LONG="${ARRAY_DIRECTORY_INFO[0]}"
+else
+    PERMISSIONS_LONG=""
+    ICON_PERMISSIONS=""
+fi
 
-# User:
+# Permissions number:
+if [ $PERMISSIONS_NUMBER_FLAG -eq 0 ]; then
+    # Note: We need only the last 3 numbers from this string.
+    PERMISSIONS_NUMBER="${ARRAY_DIRECTORY_INFO[1]:(-3)}"
+else
+    PERMISSIONS_NUMBER=""
+fi
 
+# User Name:
+if [ $USER_NAME_FLAG -eq 0 ]; then
+    USER_NAME="${ARRAY_DIRECTORY_INFO[2]}"
+else
+    USER_NAME=""
+    ICON_USER=""
+fi
 
-# Group:
+# User ID:
+if [ $USER_ID_FLAG -eq 0 ]; then
+    USER_ID="${ARRAY_DIRECTORY_INFO[3]}"
+else
+    USER_ID=""
+fi
 
+# Group Name:
+if [ $GROUP_NAME_FLAG -eq 0 ]; then
+    GROUP_NAME="${ARRAY_DIRECTORY_INFO[4]}"
+else
+    GROUP_NAME=""
+    ICON_GROUP=""
+fi
+
+# Group ID:
+if [ $GROUP_ID_FLAG -eq 0 ]; then    
+    GROUP_ID="${ARRAY_DIRECTORY_INFO[5]}"
+else
+    GROUP_ID=""
+fi
 
 # Old settings for TIME_* variables. These match commented-out 
 # STAT_TIME_ARGS above 
@@ -386,6 +455,7 @@ if [ $TIME_ACCESS_FLAG -eq 0 ]; then
     fi
 else
     TIME_ACCESS=""
+    ICON_TIME_ACCESS=""
 fi
 # Time - Modified:
 if [ $TIME_MODIFIED_FLAG -eq 0 ]; then
@@ -396,6 +466,7 @@ if [ $TIME_MODIFIED_FLAG -eq 0 ]; then
     fi 
 else
     TIME_MODIFIED=""
+    ICON_TIME_MODIFIED=""
 fi
 # Time - Change:
 if [ $TIME_CHANGE_FLAG -eq 0 ]; then
@@ -406,6 +477,7 @@ if [ $TIME_CHANGE_FLAG -eq 0 ]; then
     fi
 else
     TIME_CHANGE=""
+    ICON_TIME_CHANGE=""
 fi
 # Time - Birth:
 if [ $TIME_BIRTH_FLAG -eq 0 ]; then
@@ -416,6 +488,7 @@ if [ $TIME_BIRTH_FLAG -eq 0 ]; then
     fi
 else
     TIME_BIRTH=""
+    ICON_TIME_BIRTH=""
 fi
 
 # Debugging information:
@@ -438,7 +511,10 @@ if [ $NOISE_LEVEL -eq 5 ]; then
     $PRINTF "DEBUG - ICON_GROUP is: $ICON_GROUP\n"
     $PRINTF "DEBUG - ICON_DIRECTORY is: $ICON_DIRECTORY\n"
     $PRINTF "DEBUG - ICON_FILE is: $ICON_FILE\n"
-    $PRINTF "DEBUG - ICON_TIME is: $ICON_TIME\n"
+    $PRINTF "DEBUG - ICON_TIME_ACCESS is: $ICON_TIME_ACCESS\n"
+    $PRINTF "DEBUG - ICON_TIME_MODIFIED is: $ICON_TIME_MODIFIED\n"
+    $PRINTF "DEBUG - ICON_TIME_CHANGE is: $ICON_TIME_CHANGE\n"
+    $PRINTF "DEBUG - ICON_TIME_BIRTH is: $ICON_TIME_BIRTH\n"
 fi
 
 # Standardize the output:
@@ -449,10 +525,10 @@ PERMISSIONS_OUTPUT="$ICON_PERMISSIONS$PERMISSIONS_LONG"
 USER_OUTPUT="$ICON_USER$USER_NAME"
 GROUP_OUTPUT="$ICON_GROUP$GROUP_NAME"
 FILE_SIZE_OUTPUT="$ICON_DIRECTORY$NUMBER_OF_DIRECTORIES$SPACER$ICON_FILE$NUMBER_OF_FILES, $FILE_SIZES_TOTAL_HUMAN"
-TIME_OUTPUT="$ICON_TIME$TIME_MODIFIED $ICON_TIME$TIME_BIRTH"
+TIME_OUTPUT="$ICON_TIME_ACCESS$TIME_ACCESS$ICON_TIME_MODIFIED$TIME_MODIFIED$ICON_TIME_CHANGE$TIME_CHANGE$ICON_TIME_BIRTH$TIME_BIRTH"
 
 # And finally, print the output:
-$PRINTF "$PERMISSIONS_OUTPUT$SPACER$USER_OUTPUT$SPACER$GROUP_OUTPUT$SPACER$FILE_SIZE_OUTPUT$SPACER$TIME_OUTPUT\n"
+$PRINTF "$PERMISSIONS_OUTPUT$USER_OUTPUT$GROUP_OUTPUT$FILE_SIZE_OUTPUT$SPACER$TIME_OUTPUT\n"
 
 exit 0
 # EOF
