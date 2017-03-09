@@ -7,10 +7,11 @@
 ### TO DO ###
 ###       ###
 
-# 1) - Add support for iTerm graphical output on OS X.
-# 2) - Finish help menu output display.
-# 3) - Add support for checking programs.
-# 4) - Add additional directory information to output.
+# 1) - Add support for checking programs.
+# 2) - Add support for iTerm graphical output on OS X - image icons.
+# 3) - Display information based upon order in which user specified
+#       parameters at execution time.
+# 4) - 
 # 5) - 
 
 # Abort if any command exits with a non-zero value.
@@ -72,7 +73,7 @@ FILE_SIZES_TOTAL_HUMAN="0"
 STAT_TIME_ARGS="%b %e %Y %H:%M"
 
 # Spacing: 
-SPACER=" "
+SPACER=""
 # Icons:
 ICON_FILE=""
 ICON_DIRECTORY=""
@@ -83,6 +84,10 @@ ICON_TIME_ACCESS=""
 ICON_TIME_MODIFIED=""
 ICON_TIME_CHANGE=""
 ICON_TIME_BIRTH=""
+
+# After adding program checks, there should be error-checking for this to 
+# make sure basename is installed before setting the variable's name.
+SCRIPTNAME=`$BASENAME $0`
 
 ###        ###
 ### ARRAYS ###
@@ -356,6 +361,7 @@ fi
 
 # Assign input array names to variables for easier readability:
 # Icons - Emoji:
+# Note: Emojis need an additional space to accommodate for their size.
 if [ $ICON_EMOJI_FLAG -eq 0 ]; then
     ICON_FILE="📄 "
     ICON_DIRECTORY="📁 "
@@ -401,7 +407,7 @@ if [[ $ICON_EMOJI_FLAG -eq 1 && $ICON_LETTER_FLAG -eq 1 && $ICON_IMAGE_FLAG -eq 
     ICON_DIRECTORY="Directories:"
     ICON_USER=" "
     ICON_GROUP=" "
-    ICON_PERMISSIONS=""
+    ICON_PERMISSIONS=" "
     ICON_TIME_ACCESS=" "
     ICON_TIME_MODIFIED=" "
     ICON_TIME_CHANGE=" "
@@ -455,7 +461,8 @@ else
 fi
 
 # Old settings for TIME_* variables. These match commented-out 
-# STAT_TIME_ARGS above 
+# STAT_TIME_ARGS above. To use, comment out the Time section below and
+# uncomment these. 
 #TIME_ACCESS="${ARRAY_DIRECTORY_INFO[6]} ${ARRAY_DIRECTORY_INFO[7]} ${ARRAY_DIRECTORY_INFO[8]} ${ARRAY_DIRECTORY_INFO[9]} ${ARRAY_DIRECTORY_INFO[10]}"
 #TIME_MODIFIED="${ARRAY_DIRECTORY_INFO[11]} ${ARRAY_DIRECTORY_INFO[12]} ${ARRAY_DIRECTORY_INFO[13]} ${ARRAY_DIRECTORY_INFO[14]} ${ARRAY_DIRECTORY_INFO[15]}"
 #TIME_CHANGE="${ARRAY_DIRECTORY_INFO[16]} ${ARRAY_DIRECTORY_INFO[17]} ${ARRAY_DIRECTORY_INFO[18]} ${ARRAY_DIRECTORY_INFO[19]} ${ARRAY_DIRECTORY_INFO[20]}"
@@ -535,13 +542,31 @@ if [ $NOISE_LEVEL -eq 5 ]; then
 fi
 
 # Standardize the output:
-#PERMISSIONS_OUTPUT="$ICON_PERMISSIONS$PERMISSIONS_LONG($PERMISSIONS_NUMBER)"
-#USER_OUTPUT="$ICON_USER$USER_NAME($USER_ID)"
-#GROUP_OUTPUT="$ICON_GROUP$GROUP_NAME($GROUP_ID)"
-PERMISSIONS_OUTPUT="$ICON_PERMISSIONS$PERMISSIONS_LONG"
-USER_OUTPUT="$ICON_USER$USER_NAME"
-GROUP_OUTPUT="$ICON_GROUP$GROUP_NAME"
-FILE_SIZE_OUTPUT="$ICON_DIRECTORY$NUMBER_OF_DIRECTORIES$SPACER$ICON_FILE$NUMBER_OF_FILES, $FILE_SIZES_TOTAL_HUMAN"
+# Permissions:
+if [[ $PERMISSIONS_NUMBER_FLAG -eq 0 && $PERMISSIONS_LONG_FLAG -eq 0 ]]; then
+    PERMISSIONS_OUTPUT="$ICON_PERMISSIONS$PERMISSIONS_LONG($PERMISSIONS_NUMBER)"
+else
+    PERMISSIONS_OUTPUT="$ICON_PERMISSIONS$PERMISSIONS_LONG$PERMISSIONS_NUMBER"
+fi
+# User:
+if [[ $USER_NAME_FLAG -eq 0 && $USER_ID_FLAG -eq 0 ]]; then
+    USER_OUTPUT="$ICON_USER$USER_NAME($USER_ID)"
+else
+   USER_OUTPUT="$ICON_USER$USER_NAME$USER_ID" 
+fi
+# Group: 
+if [[ $GROUP_NAME_FLAG -eq 0 && $GROUP_ID_FLAG -eq 00 ]]; then
+    GROUP_OUTPUT="$ICON_GROUP$GROUP_NAME($GROUP_ID)"
+else
+    GROUP_OUTPUT="$ICON_GROUP$GROUP_NAME$GROUP_ID"
+fi
+# Files and Directories:
+if [[ $PERMISSIONS_LONG_FLAG -eq 0 || $PERMISSIONS_NUMBER_FLAG -eq 0 || $USER_NAME_FLAG -eq 0 || $USER_ID_FLAG -eq 0 || $GROUP_NAME_FLAG -eq 0 || $GROUP_ID_FLAG -eq 0 ]]; then
+    SPACER=" "
+fi
+FILE_SIZE_OUTPUT="$SPACER$ICON_DIRECTORY$NUMBER_OF_DIRECTORIES$SPACER$ICON_FILE$NUMBER_OF_FILES, $FILE_SIZES_TOTAL_HUMAN"
+
+# Time: 
 TIME_OUTPUT="$ICON_TIME_ACCESS$TIME_ACCESS$ICON_TIME_MODIFIED$TIME_MODIFIED$ICON_TIME_CHANGE$TIME_CHANGE$ICON_TIME_BIRTH$TIME_BIRTH"
 
 # And finally, print the output:
