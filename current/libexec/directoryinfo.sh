@@ -233,46 +233,60 @@ for ((i=0; i < ${#ARRAY_ARGUMENTS[*]}; i++)) do
     
     # Check for - here, then proceed with case statement.
     if [[ "${ARRAY_ARGUMENTS[$i]}" =~ ^[-][-abCcdEeGghilmPpqsUuv] ]]; then 
+        # Break apart longer GNU-style arguments into single elements and move
+        # to new positions in ARRAY_ARGUMENTS
+        if [[ "${ARRAY_ARGUMENTS[$i]}" =~ ^[-][a-zA-Z0-9] ]]; then
+            # If the length of a GNU-style argument is greater than 1,
+            # break it apart into new elements.
+            if [[ "${#ARRAY_ARGUMENTS[$i]}" -gt 1 ]]; then
+                local ARG_LENGTH=${#ARRAY_ARGUMENTS[$i]}
+                local ARG_POSITION=$i
+                local ARG_REMAIN=(($ARG_LENGTH - $ARG_POSITION))
+                local ARG_ADD=0
+                # Now move the elements.
+            fi
+        fi 
+        #
         case ${ARRAY_ARGUMENTS[$i]} in
-            *a* | --time-access) TIME_ACCESS_FLAG=0
+            -a | --time-access) TIME_ACCESS_FLAG=0
             ;;
-            *b* | --time-birth) TIME_BIRTH_FLAG=0
+            -b | --time-birth) TIME_BIRTH_FLAG=0
             ;;
-            *C* | --format-condensed) fnFORMAT_CHECK; CONDENSED_FLAG=0; FORMAT_TRIGGERED=0 
+            -C | --format-condensed) fnFORMAT_CHECK; CONDENSED_FLAG=0; FORMAT_TRIGGERED=0 
             ;;
-            *c* | --time-change) TIME_CHANGE_FLAG=0
+            -c | --time-change) TIME_CHANGE_FLAG=0
             ;; 
-            *d* | --debug) fnNOISE_LEVEL_TRIGGERED_CHECK; NOISE_LEVEL=5; NOISE_LEVEL_TRIGGERED=0
+            -d | --debug) fnNOISE_LEVEL_TRIGGERED_CHECK; NOISE_LEVEL=5; NOISE_LEVEL_TRIGGERED=0
             ;;
-            *E* | --format-extended) fnFORMAT_CHECK; EXTENDED_FLAG=0; FORMAT_TRIGGERED=0
+            -E | --format-extended) fnFORMAT_CHECK; EXTENDED_FLAG=0; FORMAT_TRIGGERED=0
             ;;
-            *e* | --icon-emoji) fnICON_CHECK; ICON_EMOJI_FLAG=0; ICON_TRIGGERED=0; SPACER=""
+            -e | --icon-emoji) fnICON_CHECK; ICON_EMOJI_FLAG=0; ICON_TRIGGERED=0; SPACER=""
             ;;
-            *G* | --group-name) GROUP_NAME_FLAG=0
+            -G | --group-name) GROUP_NAME_FLAG=0
             ;;
-            *g* | --group-id) GROUP_ID_FLAG=0
+            -g | --group-id) GROUP_ID_FLAG=0
             ;;
-            *h* | --help) fnHELP; exit 0
+            -h | --help) fnHELP; exit 0
             ;;
-            *i* | --icon-image) fnICON_CHECK; ICON_IMAGE_FLAG=0; ICON_IMAGE_FLAG=0
+            -i | --icon-image) fnICON_CHECK; ICON_IMAGE_FLAG=0; ICON_IMAGE_FLAG=0
             ;;
-            *l* | --icon-letter) fnICON_CHECK; ICON_LETTER_FLAG=0; ICON_TRIGGERED=0
+            -l | --icon-letter) fnICON_CHECK; ICON_LETTER_FLAG=0; ICON_TRIGGERED=0
             ;;
-            *m* | --time-modified) TIME_MODIFIED_FLAG=0 
+            -m | --time-modified) TIME_MODIFIED_FLAG=0 
             ;;
-            *P* | --permissions-long) PERMISSIONS_LONG_FLAG=0
+            -P | --permissions-long) PERMISSIONS_LONG_FLAG=0
             ;;
-            *p* | --permissions-number) PERMISSIONS_NUMBER_FLAG=0
+            -p | --permissions-number) PERMISSIONS_NUMBER_FLAG=0
             ;;
-            *q* | --quiet) fnNOISE_LEVEL_TRIGGERED_CHECK; NOISE_LEVEL=2; NOISE_LEVEL_TRIGGERED=0
+            -q | --quiet) fnNOISE_LEVEL_TRIGGERED_CHECK; NOISE_LEVEL=2; NOISE_LEVEL_TRIGGERED=0
             ;;
-            *s* | --silent) fnNOISE_LEVEL_TRIGGERED_CHECK; NOISE_LEVEL=1; NOISE_LEVEL_TRIGGERED=0
+            -s | --silent) fnNOISE_LEVEL_TRIGGERED_CHECK; NOISE_LEVEL=1; NOISE_LEVEL_TRIGGERED=0
             ;;
-            *U* | --user-name) USER_NAME_FLAG=0
+            -U | --user-name) USER_NAME_FLAG=0
             ;;
-            *u* | --user-id) USER_ID_FLAG=0
+            -u | --user-id) USER_ID_FLAG=0
             ;;
-            *v* | --verbose) fnNOISE_LEVEL_TRIGGERED_CHECK; NOISE_LEVEL=4; NOISE_LEVEL_TRIGGERED=0
+            -v | --verbose) fnNOISE_LEVEL_TRIGGERED_CHECK; NOISE_LEVEL=4; NOISE_LEVEL_TRIGGERED=0
             ;;
             *) exit 1
             ;;
