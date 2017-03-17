@@ -219,34 +219,37 @@ fi
 
 # Read in arguments supplied by user.
 ARRAY_ARGUMENTS=($@) #Could also use $* for more control.
-for ((i=0; i < ${#ARRAY_ARGUMENTS[*]}; i++)) do
+ARRAY_ARGUMENTS_LENGTH=${#ARRAY_ARGUMENTS[*]}
+for ((i=0; i < $ARRAY_ARGUMENTS_LENGTH; i++)) do
+ARRAY_ARGUMENTS_POSITION=$i
     if [ $NOISE_LEVEL -eq 5 ]; then
         $PRINTF "DEBUG - ARRAY_ARGUMENTS[$i] is: ${ARRAY_ARGUMENTS[$i]}\n"
+        $PRINTF "DEBUG - ARRAY_ARGUMENTS_LENGTH is: $ARRAY_ARGUMENTS_LENGTH\n"
+        $PRINTF "DEBUG - ARRAY_ARGUMENTS_POSITION is: $ARRAY_ARGUMENTS_POSITION\n"
     fi
-    
     # Check ARRAY_ARGUMENTS for a directory.
     if [[ "${ARRAY_ARGUMENTS[$i]}" =~ ^[/] ]]; then
         # Execute directory code here.
         DIRECTORY=${ARRAY_ARGUMENTS[$i]}
     fi
-        # Check for ~ as home directory list, and make it valid.
-    
     # Check for - here, then proceed with case statement.
-    if [[ "${ARRAY_ARGUMENTS[$i]}" =~ ^[-][-abCcdEeGghilmPpqsUuv] ]]; then 
-        # Break apart longer GNU-style arguments into single elements and move
-        # to new positions in ARRAY_ARGUMENTS
-        if [[ "${ARRAY_ARGUMENTS[$i]}" =~ ^[-][a-zA-Z0-9] ]]; then
+    if [[ "${ARRAY_ARGUMENTS[$i]}" =~ ^[-][-a-zA-Z0-9]* ]]; then 
+        # The above checks for a legitimate argument, whether GNU or POSIX-styled.
+        # The below checks for GNU-specific arguments.
+        if [[ "${ARRAY_ARGUMENTS[$i]}" =~ ^[-][a-zA-Z0-9]{1} ]]; then
             # If the length of a GNU-style argument is greater than 1,
-            # break it apart into new elements.
+            # break it apart into new elements of ARRAY_ARGUMENTS.
             if [[ "${#ARRAY_ARGUMENTS[$i]}" -gt 1 ]]; then
-                local ARG_LENGTH=${#ARRAY_ARGUMENTS[$i]}
-                local ARG_POSITION=$i
-                local ARG_REMAIN=(($ARG_LENGTH - $ARG_POSITION))
-                local ARG_ADD=0
+                # Figure out where we are in ARRAY_ARGUMENTS
+                ARG_LENGTH=${#ARRAY_ARGUMENTS[$i]}
+                for ((ARG_POSITION=0; ARG_POSITION < $ARG_LENGTH; ARG_POSITION++)) do 
+                    ((ARG_COUNT++))
+                done
                 # Now move the elements.
+            ((ARG_REMAIN=$ARG_LENGTH - $ARG_POSITION))
             fi
         fi 
-        #
+        # Now we can read in the arguments.
         case ${ARRAY_ARGUMENTS[$i]} in
             -a | --time-access) TIME_ACCESS_FLAG=0
             ;;
