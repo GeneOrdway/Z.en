@@ -107,7 +107,10 @@ fi
 if [[ "$OSTYPE" == "darwin"* ]]; then     
     $AWK -F: '{printf "%s:%s\n",$1,$3}' /etc/passwd
     $DSCL $HOST -list /Users
-#FreeBSD
+    #$DSCL $HOST -readall /Users Password UniquieID PrimaryGroupID RealName NFSHomeDirectory UserShell
+    #$DSCL $HOST -readall /Users Password UniquieID PrimaryGroupID RealName NFSHomeDirectory UserShell | $AWK '/RealName/ {REAL_NAME = $2} {print REAL_NAME}'
+
+    #FreeBSD
 elif [[ "$OSTYPE" == "freebsd"* ]]; then 
     $AWK -F: '{printf "%s:%s\n",$1,$3}' /etc/passwd
 # Linux
