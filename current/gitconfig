@@ -1,10 +1,22 @@
-[color]
-	diff = auto
-	status = auto
-	branch = auto
-	ui = auto
-[alias]
-	st = status
+# 
 [user]
 	name = Gene Ordway
 	email = GeneOrdway@GMail.com
+[github]
+    user = GeneOrdway
+    token = token
+[core]
+    editor = vim
+    pager = vimpager
+    excludesfile = ~/.gitignore
+[diftool]
+    tool = vimdiff
+[color]
+	ui = auto
+   	diff = auto
+	status = auto
+	branch = auto
+[alias]
+	st = status
+    logpretty = log --graph --decorate --prettyoneline --abbrev-commit
+    
