@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-# Path
+# pathhelper.sh
 # 
 # Script to check and set additional user-defined paths
 #
