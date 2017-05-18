@@ -1907,10 +1907,19 @@ export MSF_DATABASE_CONFIG=/usr/local/src/metasploit-framework/config/database.y
 # Determine the Operating System:
 if [[ "$OSTYPE" == "darwin"* ]]; then  
 # OS X
+    # If OS is less than or equal to Leopard, export DISPLAY and set JAVA_HOME
+    if [[ ${OSTYPE:6} -le 9 ]]; then
+        # Java Home
+        export JAVA_HOME=/Library/Java/Home
+        export JRE_HOME=/Library/Java/Home
+        # Fink Display Export
+        export DISPLAY=:0
+    else 
+        # Java Home
+        export JAVA_HOME=`/usr/libexec/java_home -v 1.6`
+    fi        
     #export CVSROOT=/usr/local/cvsroot   # CVS Root
     #export CVS_RSH=/usr/bin/ssh         # CVS 
-    export JAVA_HOME=/Library/Java/Home # Java
-    export JRE_HOME=/
 
     # Use Fink for compiling software
     #export CFLAGS=-I/sw/include 
@@ -1929,13 +1938,6 @@ if [[ "$OSTYPE" == "darwin"* ]]; then
     ##LDFLAGS:  -L/usr/local/opt/sqlite/lib
     ##CPPFLAGS: -I/usr/local/opt/sqlite/include
     ##PKG_CONFIG_PATH: /usr/local/opt/sqlite/lib/pkgconfig
-
-
-    # Fink Display Export
-    # Exports the DISPLAY option if OS is less than Leopard
-    if [[ $OS_VERSION < 9.0.0 ]]; then
-        export DISPLAY=:0
-    fi
 
     # Fink:
     #test -r /sw/bin/init.sh && . /sw/bin/init.sh

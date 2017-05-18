@@ -12,18 +12,18 @@ alias df="df -h"
 alias du="du -h -d1"
 alias dh="dirs -v"	# See .zshrc for more details on setting stack level.
 
-## Making Directories:
+# Making Directories:
 alias makedir="mkdir -p"
 alias md="mkdir -p"
 
-## Removing Directories:
+# Removing Directories:
 alias removedir="rmdir"
 alias rd="rmdir"
 
-## Removing Files:
+# Removing Files:
 alias remove="rm"
 
-## Listing Directories:
+# Listing Directories:
 alias list="ls -alFh"
 alias la="ls -alFh"
 alias dir="ls -alFh"
@@ -36,25 +36,31 @@ alias ps="ps -ax"
 # Maintenance:
 alias updatedb="/usr/libexec/locate.updatedb"
 
-# OS X Specific:
-# Opening Apps from CLI
-alias appopen="open -a"
+###               ###
+### OS X Specific ###
+###               ###
 
-## Wire Shark:
-alias ethereal="open -a SharkLauncher.app"
-alias wireshark="open -a SharkLauncher.app"
+# Wireshark:
+alias wireshark="open -a /Applications/Wireshark.app"
 
-## Ettercap:
-alias ettercapx="ettercap -G"
+# Nmap:
+alias zenamp="open -a /Applications/Zenmap.app"
 
-## Net Map:
-#alias zenamp="open -a X11.app; sudo zenmap"
+# X-Chat:
+alias xchat="open -a /Applications/X-Chat\ Aqua.app"
 
-## X-Chat:
-alias xchat="open -a X-Chat\ Aqua.app"
+# VLC:
+alias vlc="open -a /Applications/VLC.app"
 
-## VLC:
-alias vlc="open -a VLC.app"
+# UnRar:
+alias unrarx="open -a /Applications/UnRarX.app"
 
-## UnRar:
-alias unrarx="open -a UnRarX.app"
+###                  ###
+### FreeBSD Specific ###
+###                  ###
+
+###                ###
+### Linux Specific ###
+###                ###
+
+#EOF
