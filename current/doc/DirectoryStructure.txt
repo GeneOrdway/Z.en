@@ -30,14 +30,19 @@ Explanation of home directory structure:
 
 /$HOME/.etc/ - Configuration files for utilities.
 
+/$HOME/.fonts/ - Locally installed fonts. 
+
 /$HOME/.lib/ - Non-executable files used by other programs.
-/$HOME/.lib/icons/ - 
+/$HOME/.lib/icons/ - Icon files used by iTerm and other terminals
+that support graphical output.
 /$HOME/.lib/graphics/ - 
-/$HOME/.lib/fonts/ - 
 
 /$HOME/.libexec/ - Utilities executed by other programs. These can also be
 executed as standalone programs, but are primarily called by other
 applications.
+
+/$HOME/.misc/ - Miscellaneous non-home directory files.
+/$HOME/.misc/iTerm2/ - iTerm2 color profile and preference files.
 
 /$HOME/.sbin/ - Standalone utilities to be run with elevated privileges. 
 

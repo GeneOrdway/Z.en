@@ -1,2 +1,11 @@
-# dotfiles
-Gene's home directory dot files
+# Z.en
+Or, 'ZSH Environment,' is my collection of files and programs in my home
+directory. Further documentation can be found under the 'doc' directory in
+'current.'
+
+# Installation:
+
+Run './install.sh' to install the contents of this project into proper
+locations within your home directory.
+
+#EOF
