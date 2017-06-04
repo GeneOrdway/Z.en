@@ -14,7 +14,9 @@
 #          I could do this by checking for glyph character support, 
 #          printing the characters with print -P or echo -e and populate 
 #          ARRAY_GRADIENT_RIGHT_CHARACTERS from the printed characters. 
-# 6) -  
+# 6) - Add timer for externally-loaded prompt modules so prompt will time
+#          out and continue to load, rather than waiting for a stuck module.  
+# 7) - 
 
 ###                             ###
 ### CONSTANTS & ARRAY CONSTANTS ###
@@ -218,12 +220,12 @@ fn_ExitStatus
 PR_DIRECTORY_INFO='%F{246}%K{235}'`$HOME/.libexec/directoryinfo.sh $PWD`
 
 # Version Control System Status:
-PR_VCS_STATUS='%F{246}%K{235}'
+PR_VCS_STATUS='%F{246}%K{235}'${vcs_info_msg_0_}
 
 # PS1
 PROMPT='$PR_SET_CHARSET$PR_STITLE${(e)PR_TITLEBAR}\
 $PR_GRADIENT_LEFT${(e)GRADIENT_FILLBAR_LEFT}$PR_USER_HOST_TTY${(e)GRADIENT_FILLBAR_RIGHT}$PR_GRADIENT_RIGHT
-$PR_DIRECTORY_INFO$PR_VCS_STATUS
+$PR_DIRECTORY_INFO|$PR_VCS_STATUS
 $PR_LINE_NUMBERS$PR_BRACKET_LEFT$PR_PWD$PR_BRACKET_RIGHT $PR_PRIVILEGES $PR_NO_COLOUR'
 
 # Right Prompt
