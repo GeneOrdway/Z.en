@@ -88,7 +88,7 @@ ESCAPE_SEQUENCE="\033"
 
 # Get the load averages:
 OUTPUT=`$LOADAVG | $AWK -v AWK_COLORS=$TERM_COLORS -v AWK_CORES=$CORES -v AWK_ESCAPE_SEQUENCE=$ESCAPE_SEQUENCE '
-match($0,/[0-9]{2}\.([0-9]{2})/) {
+match($0,/[0-9]{1,2}+\.([0-9]{2})/) {
 LOADAVG=(substr($0, RSTART,RLENGTH+15));
 # Matches the regular expression pattern for #.## and copies the 15 spaces
 # from the first pattern match to the last entry. Then stores that to
