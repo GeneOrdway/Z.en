@@ -38,6 +38,23 @@ fn_ERROR_MESSAGE() {
     $PRINTF "ERROR: $*\n" 1>&2 
 }
 
+###           ###
+### VARIABLES ###
+###           ###
+
+# Initialize:
+LOADAVG=""
+CORES=1
+TMUX_ACTIVE=1
+TERM_COLORS=""
+OUTPUT=""
+
+# Set main escape sequences
+# Hex: \x1b
+# Octal: \033
+# Decimal: \e
+ESCAPE_SEQUENCE="\033"
+
 ###      ###
 ### MAIN ###
 ###      ###
@@ -62,7 +79,7 @@ else
 fi
 
 # See if tmux is running:
-if [[ "$TERM" = "screen*" ]] && [ -n "$TMUX" ]; then
+if [[ "$TERM" == "screen"* ]] && [ -n "$TMUX" ]; then
     TMUX_ACTIVE=0
 else
     TMUX_ACTIVE=1
@@ -86,12 +103,6 @@ if [ $CORES -eq 0 ]; then
     fn_ERROR_MESSAGE "Could not determine the number of physical cpu cores available. Script will now set value to 1. User should check script settings."
     CORES=1
 fi
-
-# Set main escape sequences
-# Hex: \x1b
-# Octal: \033
-# Decimal: \e
-ESCAPE_SEQUENCE="\033"
 
 # Get the load averages:
 OUTPUT=`$LOADAVG | $AWK -v AWK_COLORS=$TERM_COLORS -v AWK_CORES=$CORES -v AWK_ESCAPE_SEQUENCE=$ESCAPE_SEQUENCE -v AWK_TMUX_ACTIVE=$TMUX_ACTIVE '
@@ -339,8 +350,8 @@ else {
 # Apply colors:
 # One Minute:
 for (i = 1; i <= length(ARRAY_LOADAVG_VALUES); i++) {
-    if (ONE_LOADAVG >= ARRAY_LOADAVG_VALUES[i] && AWK_TMUX_ACTIVE = 0) { 
-        ONE=AWK_ESCAPE_SEQUENCE"["FG_ESCAPE_SEQUENCE""ARRAY_FG_COLORS[i]"m"AWK_ESCAPE_SEQUENCE"["BG_ESCAPE_SEQUENCE""ARRAY_BG_COLORS[i]"m"ARRAY_LOADAVG[1]""AWK_ESCAPE_SEQUENCE"[0m";
+    if (ONE_LOADAVG >= ARRAY_LOADAVG_VALUES[i] && AWK_TMUX_ACTIVE == 0) { 
+        ONE="#[fg=colour"ARRAY_FG_COLORS[i]"]#[bg=colour"ARRAY_BG_COLORS[i]"]"ARRAY_LOADAVG[1]"#[default]";
     }
     else if (ONE_LOADAVG >= ARRAY_LOADAVG_VALUES[i] && AWK_TMUX_ACTIVE = 1) {
         ONE=AWK_ESCAPE_SEQUENCE"["FG_ESCAPE_SEQUENCE""ARRAY_FG_COLORS[i]"m"AWK_ESCAPE_SEQUENCE"["BG_ESCAPE_SEQUENCE""ARRAY_BG_COLORS[i]"m"ARRAY_LOADAVG[1]""AWK_ESCAPE_SEQUENCE"[0m";
@@ -348,8 +359,8 @@ for (i = 1; i <= length(ARRAY_LOADAVG_VALUES); i++) {
 }
 # Five Minute:
 for (i = 1; i <= length(ARRAY_LOADAVG_VALUES); i++) { 
-    if (FIVE_LOADAVG >= ARRAY_LOADAVG_VALUES[i] && AWK_TMUX_ACTIVE = 0) { 
-        FIVE=AWK_ESCAPE_SEQUENCE"["FG_ESCAPE_SEQUENCE""ARRAY_FG_COLORS[i]"m"AWK_ESCAPE_SEQUENCE"["BG_ESCAPE_SEQUENCE""ARRAY_BG_COLORS[i]"m"ARRAY_LOADAVG[2]""AWK_ESCAPE_SEQUENCE"[0m";
+    if (FIVE_LOADAVG >= ARRAY_LOADAVG_VALUES[i] && AWK_TMUX_ACTIVE == 0) { 
+        FIVE="#[fg=colour"ARRAY_FG_COLORS[i]"]#[bg=colour"ARRAY_BG_COLORS[i]"]"ARRAY_LOADAVG[2]"#[default]";
     }
     else if (FIVE_LOADAVG >= ARRAY_LOADAVG_VALUES[i] && AWK_TMUX_ACTIVE = 1) {
         FIVE=AWK_ESCAPE_SEQUENCE"["FG_ESCAPE_SEQUENCE""ARRAY_FG_COLORS[i]"m"AWK_ESCAPE_SEQUENCE"["BG_ESCAPE_SEQUENCE""ARRAY_BG_COLORS[i]"m"ARRAY_LOADAVG[2]""AWK_ESCAPE_SEQUENCE"[0m";
@@ -357,8 +368,8 @@ for (i = 1; i <= length(ARRAY_LOADAVG_VALUES); i++) {
 }
 # Fifteen Minute:
 for (i = 1; i <= length(ARRAY_LOADAVG_VALUES); i++) { 
-    if (FIFTEEN_LOADAVG >= ARRAY_LOADAVG_VALUES[i] && AWK_TMUX_ACTIVE = 0) {
-        FIFTEEN=AWK_ESCAPE_SEQUENCE"["FG_ESCAPE_SEQUENCE""ARRAY_FG_COLORS[i]"m"AWK_ESCAPE_SEQUENCE"["BG_ESCAPE_SEQUENCE""ARRAY_BG_COLORS[i]"m"ARRAY_LOADAVG[3]""AWK_ESCAPE_SEQUENCE"[0m";
+    if (FIFTEEN_LOADAVG >= ARRAY_LOADAVG_VALUES[i] && AWK_TMUX_ACTIVE == 0) {
+        FIFTEEN="#[fg=colour"ARRAY_FG_COLORS[i]"]#[bg=colour"ARRAY_BG_COLORS[i]"]"ARRAY_LOADAVG[3]"#[default]";
     }
     else if (FIFTEEN_LOADAVG >= ARRAY_LOADAVG_VALUES[i] && AWK_TMUX_ACTIVE = 1) {
         FIFTEEN=AWK_ESCAPE_SEQUENCE"["FG_ESCAPE_SEQUENCE""ARRAY_FG_COLORS[i]"m"AWK_ESCAPE_SEQUENCE"["BG_ESCAPE_SEQUENCE""ARRAY_BG_COLORS[i]"m"ARRAY_LOADAVG[3]""AWK_ESCAPE_SEQUENCE"[0m";
