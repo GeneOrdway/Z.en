@@ -46,15 +46,18 @@ PASSWORD=""
 
 # Read in source:
 if [[ ! -e "$CONFIGURATION_FILE" ]]; then
+    $PRINTF "Configuration file not found at location: $CONFIGURATION_FILE\n"
     exit 1
 else
+    # Probably better not to source this, but instead, read these values in.
     source $CONFIGURATION_FILE 
 fi
 
 # Blank username or password? Get outta' here!
-if [[ ! -e "$USERNAME" || ! -e "$PASSWORD" ]]; then
-    exit 1
-fi
+#if [[ ! -e "$USERNAME" || ! -e "$PASSWORD" ]]; then
+#    $PRINTF "USERNAME and PASSWORD fields cannot be left blank. Exiting.\n"
+#    exit 1
+#fi
 
 # Can we support emojis?
 
