@@ -10,7 +10,7 @@
 # 2) - Verify that all the proper error checking has been completed. 
 # 3) - Import color values to ARRAY_FG_COLORS and ARRAY_BG_COLORS through
 #       external configuration file.
-# 4) - ps -e -o %cpu | awk '{s+=$1; UTILIZATION= s / 8} END { print UTILIZATION}'
+# 4) - ps -A -o %cpu | awk '{ if (NR!=1 && $1>0) { CPU+=$1 }} END { CPU = CPU / 8; print CPU }'
 
 ###          ###
 ### PROGRAMS ###
@@ -60,7 +60,10 @@ ESCAPE_SEQUENCE="\033"
 # OS X
 if [[ "$OSTYPE" == "darwin"* ]]; then     
     PS_ARGUMENTS="-A -o %cpu"
-    CORES=`$SYSCTL -n hw.physicalcpu`
+    # This will give me the physical cores:
+    # CORES=`$SYSCTL -n hw.physicalcpu`
+    # This will give me the logical cores:
+    CORES=`$SYSCTL -n hw.ncpu`
 # FreeBSD
 elif [[ "$OSTYPE" == "freebsd"* ]]; then 
     PS_ARGUMENTS="-a -o %cpu"
@@ -103,10 +106,29 @@ fi
 
 # Get the load averages:
 OUTPUT=`$PS $PS_ARGUMENTS | $AWK -v AWK_COLORS=$TERM_COLORS -v AWK_CORES=$CORES -v AWK_ESCAPE_SEQUENCE=$ESCAPE_SEQUENCE -v AWK_TMUX_ACTIVE=$TMUX_ACTIVE '
+BEGIN {
+###           ###
+### VARIABLES ###
+###           ###
+
+# Initialize AWK Variables:
+CPU_UTILIZATION=0;
+TOTAL_CPU_UTILIZATION=0;
+FG_ESCAPE_SEQUENCE=""
+BG_ESCAPE_SEQUENCE=""
+STYLIZED_CPU_UTILIZATION=""
+}
+
+###      ###
+### MAIN ###
+###      ###
 {
-# Add all process CPU utilization together.
-CPU_UTILIZATION+=1;
-    
+# Ignore the first row and any rows that are not above zero:
+if (NR!=1 && $1>0) {
+    # Add all process CPU utilization together.
+    CPU_UTILIZATION+=$1;
+}
+
 # Determine cores and divide CPU_UTILIZATION by the number of cores to see 
 # what kind of load exists on each core.
 TOTAL_CPU_UTILIZATION = CPU_UTILIZATION / AWK_CORES;
