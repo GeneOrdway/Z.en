@@ -6,16 +6,9 @@
 ### TO DO ###
 ###       ###
 
-# 1 - So after thinking about this script, this is a quick and dirty hack
-#       to check for new emails on Google's gmail platform, but there
-#       are better ways of achieving the same results; namely, by
-#       connecting to email servers via IMAP instances and allowing
-#       a new connection to poll for emails. This will also allow for
-#       connections to a multitude of email platforms, not just gmail.
-# 2 - If we do intend to keep this script, we cannot check more frequently
+# 1 - If we do intend to keep this script, we cannot check more frequently
 #       than once every 10 minutes.
-# 3 - Finish adding error checking to this script.
-# 4 - 
+# 2 - 
 
 ###          ###
 ### PROGRAMS ###
@@ -38,11 +31,23 @@ PASSWORD=""
 ### ERROR CHECKING ###
 ###                ###
 
-# Does PRINTF exist?
+# Make sure our programs exist at specified locations.
+if [ ! -e $PRINTF ]; then
+    # Cannot display error message with no program to print it.
+    exit 1
+fi
 
 # Does CURL exist?
+if [ ! -e $CURL ]; then
+    $PRINTF "Cannot find curl at location: $CURL. Exiting.\n"
+    exit 1
+fi
 
 # Does XMLLINT exist?
+if [ ! -e $XMLLINT ]; then 
+    $PRINTF "Cannot find xmllint at location: $XMLLINT. Exiting.\n"
+    exit 1
+fi
 
 # Read in source:
 if [[ ! -e "$CONFIGURATION_FILE" ]]; then
