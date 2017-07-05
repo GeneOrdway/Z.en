@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-# This script prints a colorized output of your system's cpu utilization.
+# This script prints a colorized output of your system's memory usage.
 
 ###       ###
 ### TO DO ###
@@ -19,7 +19,6 @@ PRINTF="/usr/bin/printf"
 AWK="/usr/bin/awk"
 TPUT="/usr/bin/tput"
 PS="/bin/ps"
-SYSCTL="/usr/sbin/sysctl"
 
 ###           ###
 ### FUNCTIONS ###
@@ -41,7 +40,6 @@ fn_ERROR_MESSAGE() {
 
 # Initialize:
 PS_ARGUMENTS=""
-CORES=1
 TMUX_ACTIVE=1
 TERM_COLORS=""
 OUTPUT=""
@@ -59,20 +57,13 @@ ESCAPE_SEQUENCE="\033"
 # Determine the Operating System:
 # OS X
 if [[ "$OSTYPE" == "darwin"* ]]; then     
-    PS_ARGUMENTS="-A -o %cpu"
-    # This will give me the physical cores:
-    # CORES=`$SYSCTL -n hw.physicalcpu`
-    # This will give me the logical cores:
-    CORES=`$SYSCTL -n hw.ncpu`
+    PS_ARGUMENTS="-A -o %mem"
 # FreeBSD
 elif [[ "$OSTYPE" == "freebsd"* ]]; then 
-    PS_ARGUMENTS="-a -o %cpu"
-    CORES=`$SYSCTL -a hw.ncpu`
+    PS_ARGUMENTS="-a -o %mem"
 # Linux
 elif [[ "$OSTYPE" == "linux-gnu" ]]; then
-    PS_ARGUMENTS="ps -A -o %CPU" 
-    # There may be a better way to do this.
-    CORES=`$AWK '/^processor/ {++n} END {print n+1}' /proc/cpuinfo`
+    PS_ARGUMENTS="ps -A -o %mem" 
 else 
     fn_ERROR_MESSAGE "Could not determine Operating System. Exiting."
     exit 1
@@ -98,25 +89,19 @@ if [ $TERM_COLORS -eq 0 ]; then
 #    exit 1
 fi
 
-# Check the number of cores:
-if [ $CORES -eq 0 ]; then
-    fn_ERROR_MESSAGE "Could not determine the number of physical cpu cores available. Script will now set value to 1. User should check script settings."
-    CORES=1
-fi
-
 # Get the load averages:
-OUTPUT=`$PS $PS_ARGUMENTS | $AWK -v AWK_COLORS=$TERM_COLORS -v AWK_CORES=$CORES -v AWK_ESCAPE_SEQUENCE=$ESCAPE_SEQUENCE -v AWK_TMUX_ACTIVE=$TMUX_ACTIVE '
+OUTPUT=`$PS $PS_ARGUMENTS | $AWK -v AWK_COLORS=$TERM_COLORS -v AWK_ESCAPE_SEQUENCE=$ESCAPE_SEQUENCE -v AWK_TMUX_ACTIVE=$TMUX_ACTIVE '
 BEGIN {
 ###           ###
 ### VARIABLES ###
 ###           ###
 
 # Initialize AWK Variables:
-CPU_UTILIZATION=0;
-TOTAL_CPU_UTILIZATION=0;
+MEM_UTILIZATION=0;
+TOTAL_MEM_UTILIZATION=0;
 FG_ESCAPE_SEQUENCE=""
 BG_ESCAPE_SEQUENCE=""
-STYLIZED_CPU_UTILIZATION=""
+STYLIZED_MEM_UTILIZATION=""
 }
 
 ###      ###
@@ -125,16 +110,11 @@ STYLIZED_CPU_UTILIZATION=""
 {
 # Ignore the first row and any rows that are not above zero:
 if (NR!=1 && $1>0) {
-    # Add all process CPU utilization together.
-    CPU_UTILIZATION+=$1;
+    # Add all process memory utilization together.
+    MEM_UTILIZATION+=$1;
 }
-
-# Determine cores and divide CPU_UTILIZATION by the number of cores to see 
-# what kind of load exists on each core.
-UNFORMATTED_CPU_UTILIZATION = CPU_UTILIZATION / AWK_CORES;
-
 # Limit output to two decimal places.
-TOTAL_CPU_UTILIZATION = sprintf("%.2f", UNFORMATTED_CPU_UTILIZATION);
+TOTAL_MEM_UTILIZATION = sprintf("%.2f", MEM_UTILIZATION);
 
 # Set Color and Load Average values into independent arrays:
 if (AWK_COLORS == "256") {  
@@ -190,7 +170,7 @@ if (AWK_COLORS == "256") {
     ARRAY_BG_COLORS[22]="16"
     ARRAY_BG_COLORS[23]="16"
     ARRAY_BG_COLORS[24]="16"
-    # Set CPU Utilization Scale: (4%)
+    # Set MEM Utilization Scale: (4%)
     ARRAY_SCALE[1]="4" 
     ARRAY_SCALE[2]="8" 
     ARRAY_SCALE[3]="12" 
@@ -263,7 +243,7 @@ else if (AWK_COLORS == 88) {
     ARRAY_BG_COLORS[19]="16"
     ARRAY_BG_COLORS[20]="16"
     ARRAY_BG_COLORS[21]="16"
-    # Set CPU Utilization Scale: (4%)
+    # Set MEM Utilization Scale: (4%)
     ARRAY_SCALE[1]="4" 
     ARRAY_SCALE[2]="8" 
     ARRAY_SCALE[3]="12" 
@@ -318,16 +298,16 @@ else {
 
 # Apply colors:
 for (i = 1; i <= length(ARRAY_SCALE); i++) { 
-    if (TOTAL_CPU_UTILIZATION >= ARRAY_SCALE[i] && AWK_TMUX_ACTIVE == 0) {
-        STYLIZED_CPU_UTILIZATION="#[fg=colour"ARRAY_FG_COLORS[i]"]#[bg=colour"ARRAY_BG_COLORS[i]"]"TOTAL_CPU_UTILIZATION"#[default]";
+    if (TOTAL_MEM_UTILIZATION >= ARRAY_SCALE[i] && AWK_TMUX_ACTIVE == 0) {
+        STYLIZED_MEM_UTILIZATION="#[fg=colour"ARRAY_FG_COLORS[i]"]#[bg=colour"ARRAY_BG_COLORS[i]"]"TOTAL_MEM_UTILIZATION"#[default]";
     }
-    else if (TOTAL_CPU_UTILIZATION >= ARRAY_SCALE[i] && AWK_TMUX_ACTIVE = 1) {
-        STYLIZED_CPU_UTILIZATION=AWK_ESCAPE_SEQUENCE"["FG_ESCAPE_SEQUENCE""ARRAY_FG_COLORS[i]"m"AWK_ESCAPE_SEQUENCE"["BG_ESCAPE_SEQUENCE""ARRAY_BG_COLORS[i]"m"TOTAL_CPU_UTILIZATION""AWK_ESCAPE_SEQUENCE"[0m";
+    else if (TOTAL_MEM_UTILIZATION >= ARRAY_SCALE[i] && AWK_TMUX_ACTIVE = 1) {
+        STYLIZED_MEM_UTILIZATION=AWK_ESCAPE_SEQUENCE"["FG_ESCAPE_SEQUENCE""ARRAY_FG_COLORS[i]"m"AWK_ESCAPE_SEQUENCE"["BG_ESCAPE_SEQUENCE""ARRAY_BG_COLORS[i]"m"TOTAL_MEM_UTILIZATION""AWK_ESCAPE_SEQUENCE"[0m";
     }
 }
 
 } END {
-print STYLIZED_CPU_UTILIZATION;
+print STYLIZED_MEM_UTILIZATION;
 }'`
 
 # Print output.
