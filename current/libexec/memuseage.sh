@@ -77,7 +77,7 @@ else
 fi
 
 # Check support for colors here.
-TERM_COLORS=`$TPUT colors`
+TERM_COLORS=$($TPUT colors)
 # Leave this in for error checking?
 if [ $TERM_COLORS -eq 0 ]; then
     # Monochrome - What kind of ancient-ass hardware are you running?
@@ -90,7 +90,7 @@ if [ $TERM_COLORS -eq 0 ]; then
 fi
 
 # Get the load averages:
-OUTPUT=`$PS $PS_ARGUMENTS | $AWK -v AWK_COLORS=$TERM_COLORS -v AWK_ESCAPE_SEQUENCE=$ESCAPE_SEQUENCE -v AWK_TMUX_ACTIVE=$TMUX_ACTIVE '
+OUTPUT=$($PS $PS_ARGUMENTS | $AWK -v AWK_COLORS=$TERM_COLORS -v AWK_ESCAPE_SEQUENCE=$ESCAPE_SEQUENCE -v AWK_TMUX_ACTIVE=$TMUX_ACTIVE '
 BEGIN {
 ###           ###
 ### VARIABLES ###
@@ -308,7 +308,7 @@ for (i = 1; i <= length(ARRAY_SCALE); i++) {
 
 } END {
 print STYLIZED_MEM_UTILIZATION;
-}'`
+}')
 
 # Print output.
 $PRINTF "$OUTPUT\n"

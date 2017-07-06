@@ -63,16 +63,16 @@ ESCAPE_SEQUENCE="\033"
 # OS X
 if [[ "$OSTYPE" == "darwin"* ]]; then     
     LOADAVG="$SYSCTL -n vm.loadavg"
-    CORES=`$SYSCTL -n hw.physicalcpu`
+    CORES=$($SYSCTL -n hw.physicalcpu)
 # FreeBSD
 elif [[ "$OSTYPE" == "freebsd"* ]]; then 
     LOADAVG="$SYSCTL -a vm.loadavg"
-    CORES=`$SYSCTL -a hw.ncpu`
+    CORES=$($SYSCTL -a hw.ncpu)
 # Linux
 elif [[ "$OSTYPE" == "linux-gnu" ]]; then
     LOADAVG="$UPTIME" 
     # There may be a better way to do this.
-    CORES=`$AWK '/^processor/ {++n} END {print n+1}' /proc/cpuinfo`
+    CORES=$($AWK '/^processor/ {++n} END {print n+1}' /proc/cpuinfo)
 else 
     fn_ERROR_MESSAGE "Could not determine Operating System. Exiting."
     exit 1
@@ -86,7 +86,7 @@ else
 fi
 
 # Check support for colors here.
-TERM_COLORS=`$TPUT colors`
+TERM_COLORS=$($TPUT colors)
 # Leave this in for error checking?
 if [ $TERM_COLORS -eq 0 ]; then
     # Monochrome - What kind of ancient-ass hardware are you running?
@@ -105,7 +105,7 @@ if [ $CORES -eq 0 ]; then
 fi
 
 # Get the load averages:
-OUTPUT=`$LOADAVG | $AWK -v AWK_COLORS=$TERM_COLORS -v AWK_CORES=$CORES -v AWK_ESCAPE_SEQUENCE=$ESCAPE_SEQUENCE -v AWK_TMUX_ACTIVE=$TMUX_ACTIVE '
+OUTPUT=$($LOADAVG | $AWK -v AWK_COLORS=$TERM_COLORS -v AWK_CORES=$CORES -v AWK_ESCAPE_SEQUENCE=$ESCAPE_SEQUENCE -v AWK_TMUX_ACTIVE=$TMUX_ACTIVE '
 match($0,/[0-9]{1,2}+\.([0-9]{2})/) {
 LOADAVG=(substr($0, RSTART,RLENGTH+15));
 # Matches the regular expression pattern for #.## and copies the 15 spaces
@@ -379,7 +379,7 @@ for (i = 1; i <= length(ARRAY_SCALE); i++) {
 } END {
 # One line with all three outputs
 print ONE, FIVE, FIFTEEN;
-}'`
+}')
 
 # Print output.
 $PRINTF "$OUTPUT\n"
