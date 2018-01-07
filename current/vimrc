@@ -25,7 +25,7 @@ set magic
 set report=0
 set shell=/bin/zsh
 "colorscheme default
-colorscheme wombat256
+colorscheme wombat256mod
 set showmode
 set backup
 set writebackup
@@ -50,7 +50,8 @@ set ww=h,l,b,<,>,[,]
 set listchars=tab:\|\ ,extends:>,precedes:< "These only show when 'list' is set
 set pastetoggle=<Insert>
 set ignorecase
-set textwidth=79
+"set textwidth=79
+set textwidth=76
 set complete -=k complete+=k
 set completeopt=menuone,longest ",preview
 set viminfo-=! viminfo+=!

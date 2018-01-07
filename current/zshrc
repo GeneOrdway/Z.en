@@ -1916,7 +1916,10 @@ if [[ "$OSTYPE" == "darwin"* ]]; then
         export DISPLAY=:0
     else 
         # Java Home
-        export JAVA_HOME=`/usr/libexec/java_home -v 1.6`
+        # Apple's JDK Package:
+        #export JAVA_HOME=`/usr/libexec/java_home -v 1.6`
+        # Oracle's JDK Package:
+        export JAVA_HOME=`/usr/libexec/java_home -v 1.8`
     fi        
     #export CVSROOT=/usr/local/cvsroot   # CVS Root
     #export CVS_RSH=/usr/bin/ssh         # CVS 
@@ -1953,14 +1956,8 @@ elif [[ "$OSTYPE" == "linux-gnu" ]]; then
 
 else 
 # Anything else.
-    echo "Could not determine Operating System." 
+    echo "Operating System not supported with these shell options." 
 fi
-
-# BSD:
-#
-
-# Linux:
-#
 
 # Test
 #export C_INCLUDE_PATH=$C_INCLUDE_PATH:/sw/include
@@ -1971,23 +1968,31 @@ fi
 ### ALIAS' ###
 ###        ###
 
-test -e "${HOME}/.alias" && source ${HOME}/.alias                 # File containing alias' information
+# File containing alias' information
+test -e "${HOME}/.alias" && source ${HOME}/.alias  
 
 ###        ###
 ### COLORS ###
 ###        ###
 
-test -e "${HOME}/.colors" && source ${HOME}/.colors                # File containing filetype color codes
+# File containing filetype color codes
+test -e "${HOME}/.colors" && source ${HOME}/.colors 
 
 ###        ###
 ### PROMPT ###
 ###        ###
 
-test -e "${HOME}/.zshprompt" && source ${HOME}/.zshprompt             # File containing ZSH Prompt modification
+# File containing ZSH Prompt modification
+test -e "${HOME}/.zshprompt" && source ${HOME}/.zshprompt 
 
 ###      ###
 ### MAIN ###
 ###      ###
 
+# Launch tmux on startup:
+# For single sessions of tmux:
+#[ -z "$TMUX"  ] && { tmux attach || exec tmux new-session && exit;}
+# For multiple tabs open:
+#[ -z "$TMUX"  ] && { tmux attach || tmux new-session;}
 
 # EOF

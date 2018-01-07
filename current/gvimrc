@@ -53,10 +53,17 @@ endfunction
 
 elseif has("gui_gtk2")
  
-  set guifont=monaco
+  "set guifont=monaco
+  "set guioptions-=T " remove toolbar
+
+  set guifont=DejaVu_Sans_Mono:h11
   set guioptions-=T " remove toolbar
- 
+
 elseif has("x11")
+
+  set guifont=DejaVu_Sans_Mono:h11
+  set guioptions-=T " remove toolbar
+
 elseif has("gui_win32")
 
   set guifont=DejaVu_Sans_Mono:h11
@@ -76,4 +83,4 @@ set lines=28
 " Tab headings
 set gtl=%t gtt=%F
 
-colorscheme wombat
+colorscheme wombat256mod

@@ -102,7 +102,7 @@ URxvt.tabbed.tab-bg:          13
 #background                      = White
 
 # Geometry:                   WxH+X+Y
-URxvt*geometry:               80x28+14+14
+URxvt*geometry:               82x28+14+14
 
 # Font:
 URxvt.font:                   xft:DejaVu Sans Mono:pixelsize=11:antialias=true
@@ -118,7 +118,7 @@ URxvt.fading:                 15
 # Transparency:
 # This doesn't work in OS X due to X11 limitations.
 !URxvt.inheritPixmap:	       true
-!URxvt.transparent:           true
+!URxvt.transparent:            true
 URxvt.tintColor:              white
 
 # Color:
@@ -179,30 +179,32 @@ XTerm*iconName:               XTerm
 
 # Toolbar
 XTerm*toolBar:                true 
-XTerm*VT100*titleInhibit:     false
+XTerm*vt100*titleInhibit:     false
 
 # Geometry
-XTerm*vt100*geometry:         80x28+176+0
+XTerm*vt100*geometry:         82x28+176+0
 !XTerm*resizeGravity:          SouthEast
 
 # Font:
-xterm*faceName: DejaVu Sans Mono:style=Book:antialias=true
+!XTerm.vt100.faceName:         DejaVu Sans Mono:style=Book:antialias=true
+!XTerm.vt100.faceName:         DejaVu Sans Mono:style=Book:pixelsize=13:antialias=true
 
 # Antialiased:
-#XTerm*faceName:               DejaVu Sans Mono:antialias=true:style=regular
-XTerm*faceSize:               9
+XTerm*faceName:               DejaVu Sans Mono:style=Book:antialias=true
+XTerm*faceSize:               10
+#XTerm.vt100.faceSize:         9
 # Aliased:
 !XTerm*font:                   -misc-dejavu sans mono-medium-r-normal-*-11-*-100-100-m-*-iso8859-1
 !XTerm*boldFont:               -misc-dejavu sans mono-medium-r-bold-*-11-*-100-100-m-*-iso8859-1
 
 # Bold
 !XTerm*colorBD:                darkblue
-XTerm*vt100*colorBDMode:      false
+XTerm.vt100.colorBDMode:      false
 
 # Underline
-XTerm*vt100*colorULMode:      on
-XTerm*vt100*underLine:        on
-XTerm*vt100*colorUL:          red
+XTerm.vt100.colorULMode:      on
+XTerm.vt100.underLine:        on
+XTerm.vt100.colorUL:          red
 
 # Scrolling
 XTerm*scrollKey:              true
@@ -299,89 +301,89 @@ XTerm*Scrollbar.translations: #override\
 *color15:                     #ffffff
 
 ! 256 Colors 
-!xterm.color16:	#000000
-!xterm.color17:	#00002a
-!xterm.color18:	#000055
-!xterm.color19:	#00007f
-!xterm.color20:	#0000aa
-!xterm.color21:	#0000d4
-!xterm.color22:	#002a00
-!xterm.color23:	#002a2a
-!xterm.color24:	#002a55
-!xterm.color25:	#002a7f
-!xterm.color26:	#002aaa
-!xterm.color27:	#002ad4
-!xterm.color28:	#005500
-!xterm.color29:	#00552a
-!xterm.color30:	#005555
-!xterm.color31:	#00557f
-!xterm.color32:	#0055aa
-!xterm.color33:	#0055d4
-!xterm.color34:	#007f00
-!xterm.color35:	#007f2a
-!xterm.color36:	#007f55
-!xterm.color37:	#007f7f
-!xterm.color38:	#007faa
-!xterm.color39:	#007fd4
-!xterm.color40:	#00aa00
-!xterm.color41:	#00aa2a
-!xterm.color42:	#00aa55
-!xterm.color43:	#00aa7f
-!xterm.color44:	#00aaaa
-!xterm.color45:	#00aad4
-!xterm.color46:	#00d400
-!xterm.color47:	#00d42a
-!xterm.color48:	#00d455
-!xterm.color49:	#00d47f
-!xterm.color50:	#00d4aa
-!xterm.color51:	#00d4d4
-!xterm.color52:	#2a0000
-!xterm.color53:	#2a002a
-!xterm.color54:	#2a0055
-!xterm.color55:	#2a007f
-!xterm.color56:	#2a00aa
-!xterm.color57:	#2a00d4
-!xterm.color58:	#2a2a00
-!xterm.color59:	#2a2a2a
-!xterm.color60:	#2a2a55
-!xterm.color61:	#2a2a7f
-!xterm.color62:	#2a2aaa
-!xterm.color63:	#2a2ad4
-!xterm.color64:	#2a5500
-!xterm.color65:	#2a552a
-!xterm.color66:	#2a5555
-!xterm.color67:	#2a557f
-!xterm.color68:	#2a55aa
-!xterm.color69:	#2a55d4
-!xterm.color70:	#2a7f00
-!xterm.color71:	#2a7f2a
-!xterm.color72:	#2a7f55
-!xterm.color73:	#2a7f7f
-!xterm.color74:	#2a7faa
-!xterm.color75:	#2a7fd4
-!xterm.color76:	#2aaa00
-!xterm.color77:	#2aaa2a
-!xterm.color78:	#2aaa55
-!xterm.color79:	#2aaa7f
-!xterm.color80:	#2aaaaa
-!xterm.color81:	#2aaad4
-!xterm.color82:	#2ad400
-!xterm.color83:	#2ad42a
-!xterm.color84:	#2ad455
-!xterm.color85:	#2ad47f
-!xterm.color86:	#2ad4aa
-!xterm.color87:	#2ad4d4
-!xterm.color88:	#550000
-!xterm.color89:	#55002a
-!xterm.color90:	#550055
-!xterm.color91:	#55007f
-!xterm.color92:	#5500aa
-!xterm.color93:	#5500d4
-!xterm.color94:	#552a00
-!xterm.color95:	#552a2a
-!xterm.color96:	#552a55
-!xterm.color97:	#552a7f
-!xterm.color98:	#552aaa
+!xterm.color16:	    #000000
+!xterm.color17:	    #00002a
+!xterm.color18:	    #000055
+!xterm.color19:	    #00007f
+!xterm.color20:	    #0000aa
+!xterm.color21:	    #0000d4
+!xterm.color22:	    #002a00
+!xterm.color23:	    #002a2a
+!xterm.color24:	    #002a55
+!xterm.color25:	    #002a7f
+!xterm.color26:	    #002aaa
+!xterm.color27:	    #002ad4
+!xterm.color28:	    #005500
+!xterm.color29:	    #00552a
+!xterm.color30:	    #005555
+!xterm.color31:	    #00557f
+!xterm.color32:	    #0055aa
+!xterm.color33:	    #0055d4
+!xterm.color34:	    #007f00
+!xterm.color35:	    #007f2a
+!xterm.color36:	    #007f55
+!xterm.color37:	    #007f7f
+!xterm.color38:	    #007faa
+!xterm.color39:	    #007fd4
+!xterm.color40:	    #00aa00
+!xterm.color41:	    #00aa2a
+!xterm.color42:	    #00aa55
+!xterm.color43:	    #00aa7f
+!xterm.color44:	    #00aaaa
+!xterm.color45:	    #00aad4
+!xterm.color46:	    #00d400
+!xterm.color47:	    #00d42a
+!xterm.color48:	    #00d455
+!xterm.color49:	    #00d47f
+!xterm.color50:	    #00d4aa
+!xterm.color51:	    #00d4d4
+!xterm.color52:	    #2a0000
+!xterm.color53:	    #2a002a
+!xterm.color54:	    #2a0055
+!xterm.color55:	    #2a007f
+!xterm.color56:	    #2a00aa
+!xterm.color57:	    #2a00d4
+!xterm.color58:	    #2a2a00
+!xterm.color59:	    #2a2a2a
+!xterm.color60:	    #2a2a55
+!xterm.color61:	    #2a2a7f
+!xterm.color62:	    #2a2aaa
+!xterm.color63:	    #2a2ad4
+!xterm.color64:	    #2a5500
+!xterm.color65:	    #2a552a
+!xterm.color66:	    #2a5555
+!xterm.color67:	    #2a557f
+!xterm.color68:	    #2a55aa
+!xterm.color69:	    #2a55d4
+!xterm.color70:	    #2a7f00
+!xterm.color71:	    #2a7f2a
+!xterm.color72:	    #2a7f55
+!xterm.color73:	    #2a7f7f
+!xterm.color74:	    #2a7faa
+!xterm.color75:	    #2a7fd4
+!xterm.color76:	    #2aaa00
+!xterm.color77:	    #2aaa2a
+!xterm.color78:	    #2aaa55
+!xterm.color79:	    #2aaa7f
+!xterm.color80:	    #2aaaaa
+!xterm.color81:	    #2aaad4
+!xterm.color82:	    #2ad400
+!xterm.color83:	    #2ad42a
+!xterm.color84:	    #2ad455
+!xterm.color85:	    #2ad47f
+!xterm.color86:	    #2ad4aa
+!xterm.color87:	    #2ad4d4
+!xterm.color88:	    #550000
+!xterm.color89:	    #55002a
+!xterm.color90:	    #550055
+!xterm.color91:	    #55007f
+!xterm.color92:	    #5500aa
+!xterm.color93:	    #5500d4
+!xterm.color94:	    #552a00
+!xterm.color95:	    #552a2a
+!xterm.color96:	    #552a55
+!xterm.color97:	    #552a7f
+!xterm.color98:	    #552aaa
 !!term.color100:	#555500
 !xterm.color101:	#55552a
 !xterm.color102:	#555555

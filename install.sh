@@ -52,19 +52,24 @@ LN="/bin/ln"
 # Create symbolic links for all configuration files
 for file in $FILES
 do
-	SOURCE="$HOME/dots/$file"
+    SOURCE="$HOME/Z.en/current/$file"
 	TARGET="$HOME/.$file"
 
 	# Create backup file if the target already exists and is not a symlink
 	if [ -e "$TARGET" ] && [ ! -L "$TARGET" ]; then
 		echo "WARNING: $TARGET already exists; moving to $file.old"
 		$MV "$TARGET" "$TARGET.old"
-	fi
-	case $OSTYPE in
+    fi
+
+    # Detect operating system:
+    case $OSTYPE in
 		darwin*)
 			$LN -hnfsv "$SOURCE" "$TARGET"
 			;;
-		linux*)
+        *bsd)
+            $LN -hnfsv "$SOURCE" "$TARGET"
+            ;;
+        linux*)
 			$LN -fnsv "$SOURCE" "$TARGET"
 			;;
 	esac

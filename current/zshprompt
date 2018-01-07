@@ -22,18 +22,20 @@
 ### CONSTANTS & ARRAY CONSTANTS ###
 ###                             ###
 
-# Define Gradient colors array.
-ARRAY_GRADIENT_LEFT_FOREGROUND_COLORS=(227 221 215 209 203 197 161 125 89 53 233)
-ARRAY_GRADIENT_LEFT_BACKGROUND_COLORS=(226 220 214 208 202 196 160 124 88 52 16)
-#ARRAY_GRADIENT_LEFT_CHARACTERS=(░ ░ ░ ░ ▒ ▒ ▒ ▒ ▓ ▓ ▓)
-ARRAY_GRADIENT_LEFT_CHARACTERS=(░ ░ ░ ░ ░ ░ ░ ░ ░ ░ ░)
-# Use below if no support for extended characters.
-#ARRAY_GRADIENT_LEFT_CHARACTERS=(" " " " " " " " " " " " " " " " " " " " " ")
-#ARRAY_GRADIENT_LEFT_CHARACTERS=(\xE2\x96\x91 \xE2\x96\x91 \xE2\x96\x91 \xE2\x96\x91 \xE2\x96\x91 \xE2\x96\x91 \xE2\x96\x91 \xE2\x96\x91 \xE2\x96\x91 \xE2\x96\x91 \xE2\x96\x91)
-ARRAY_GRADIENT_RIGHT_FOREGROUND_COLORS=(233 234 235 24 25 26 32 69 75 81 87)
-ARRAY_GRADIENT_RIGHT_BACKGROUND_COLORS=(16 17 18 19 20 21 27 33 39 45 51)
-#ARRAY_GRADIENT_RIGHT_CHARACTERS=(▓ ▓ ▓ ▒ ▒ ▒ ▒ ░ ░ ░ ░)
-ARRAY_GRADIENT_RIGHT_CHARACTERS=(░ ░ ░ ░ ░ ░ ░ ░ ░ ░ ░)
+#fn_GradientColors () {
+    # Define Gradient colors array.
+    ARRAY_GRADIENT_LEFT_FOREGROUND_COLORS=(227 221 215 209 203 197 161 125 89 53 233)
+    ARRAY_GRADIENT_LEFT_BACKGROUND_COLORS=(226 220 214 208 202 196 160 124 88 52 16)
+    #ARRAY_GRADIENT_LEFT_CHARACTERS=(░ ░ ░ ░ ▒ ▒ ▒ ▒ ▓ ▓ ▓)
+    ARRAY_GRADIENT_LEFT_CHARACTERS=(░ ░ ░ ░ ░ ░ ░ ░ ░ ░ ░)
+    # Use below if no support for extended characters.
+    #ARRAY_GRADIENT_LEFT_CHARACTERS=(" " " " " " " " " " " " " " " " " " " " " ")
+    #ARRAY_GRADIENT_LEFT_CHARACTERS=(\xE2\x96\x91 \xE2\x96\x91 \xE2\x96\x91 \xE2\x96\x91 \xE2\x96\x91 \xE2\x96\x91 \xE2\x96\x91 \xE2\x96\x91 \xE2\x96\x91 \xE2\x96\x91 \xE2\x96\x91)
+    ARRAY_GRADIENT_RIGHT_FOREGROUND_COLORS=(233 234 235 24 25 26 32 69 75 81 87)
+    ARRAY_GRADIENT_RIGHT_BACKGROUND_COLORS=(16 17 18 19 20 21 27 33 39 45 51)
+    #ARRAY_GRADIENT_RIGHT_CHARACTERS=(▓ ▓ ▓ ▒ ▒ ▒ ▒ ░ ░ ░ ░)
+    ARRAY_GRADIENT_RIGHT_CHARACTERS=(░ ░ ░ ░ ░ ░ ░ ░ ░ ░ ░)
+#}
 
 ###           ###
 ### FUNCTIONS ###
@@ -145,7 +147,7 @@ preexec () {
 #        echo -n "\ek$CMD\e\\"
 #    fi
 
-EXIT_CODE=$?
+local EXIT_CODE=$?
 }
 
 ###        ###
@@ -217,7 +219,7 @@ fn_ExitStatus
 #fi
 
 # Directory Info:
-PR_DIRECTORY_INFO='%F{246}%K{235}'`$HOME/.libexec/directoryinfo.sh $PWD`
+PR_DIRECTORY_INFO='%F{246}%K{235}'`$HOME/.libexec/directoryinfo.sh -e -P -p -U -G -m $PWD`
 
 # Version Control System Status:
 PR_VCS_STATUS='%F{246}%K{235}'${vcs_info_msg_0_}

@@ -28,39 +28,68 @@ alias list="ls -alFh"
 alias la="ls -alFh"
 alias dir="ls -alFh"
 
-# CPU Checking:
-#alias top="top -ocpu -R -F -s 2 -n30"
-alias ps="ps -ax"
-#alias ps="ps -ale"
-
-# Maintenance:
-alias updatedb="/usr/libexec/locate.updatedb"
-
 ###               ###
 ### OS X Specific ###
 ###               ###
 
+# Maintenance:
+alias updatedb="/usr/libexec/locate.updatedb"
+
+# CPU Checking:
+# TOP:
+#alias top="top -o cpu -R -F -s 2 -n30"
+
+# PS General:
+#alias ps="ps -ax"
+# PS CPU:
+alias pscpu="ps -arx -o ucomm=NAME____________ -o %cpu -o time=CPU_TIME_ -o wq=THREADS -o pid=PID__ -o user=USER___________"
+# PS Memory:
+alias psmem="ps -amx -o ucomm=NAME____________ -o rss=REAL_MEMORY -o vsz=VIRTUAL_MEMORY -o wq=THREADS -o pid=PID__ -o user=USER___________"
+# PS Disk:
+alias psdisk="ps -ax -o ucomm=NAME____________ -o inblk=BLOCKS_READ -o oublk=BLOCKS_WRITTEN -o pid=PID__ -o user=USER___________"
+# PS Network:
+alias psnet="ps -ax -o ucomm=NAME____________ -o pid=PID__ -o user=USER___________"
+
+# PS Tree:
+# Uses Unicode for pstree's display.
+alias pstree="pstree -g 3"
+
+# Preview:
+# Opens man pages in Preview.
+# This is still broken. This should probably be a function.
+alias mangui="man -t $1 | open -f -a /Applications/Preview.app"
+
 # Wireshark:
+# Opens GUI Wireshark app.
 alias wireshark="open -a /Applications/Wireshark.app"
 
 # Nmap:
+# Opens Zenmap for a GUI interface to nmap.
 alias zenamp="open -a /Applications/Zenmap.app"
 
 # X-Chat:
-alias xchat="open -a /Applications/X-Chat\ Aqua.app"
+# Opens the X-Chat Azure client instead of the X-Chat CLI client.
+alias xchat="open -a /Applications/X-Chat\ Azure.app"
 
 # VLC:
+# Opens VLC
 alias vlc="open -a /Applications/VLC.app"
 
 # UnRar:
+# Opens UnRAR-X GUI client.
 alias unrarx="open -a /Applications/UnRarX.app"
 
 ###                  ###
 ### FreeBSD Specific ###
 ###                  ###
 
+#alias ps="ps -ale"
+#alias ps="ps -elf"
+
 ###                ###
 ### Linux Specific ###
 ###                ###
+
+#alias ps="ps -aux"
 
 #EOF
