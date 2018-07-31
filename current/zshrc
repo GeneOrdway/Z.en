@@ -1900,8 +1900,18 @@ export GREP_COLOR='1;32'
 #
 export MSF_DATABASE_CONFIG=/usr/local/src/metasploit-framework/config/database.yml
 #
+#    Sets the Metasploit database configuration location. 
 #
-
+#--------------------------------------------------------------------------
+#
+# Ruby:
+#
+export SQL_PATH=/Applications/Postgres.app/Contents/Versions/latest
+#
+#     Sets the SQL Path for Ruby Gem to use when updating pg.
+#
+#--------------------------------------------------------------------------
+#
 ### OS Specific ###
 
 # Determine the Operating System:
