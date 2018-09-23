@@ -44,6 +44,35 @@ DIRNAME="/usr/bin/dirname"
 CP="/bin/cp"
 MV="/bin/mv"
 LN="/bin/ln"
+PIP="/usr/local/bin/pip"
+
+###        ###
+### ARRAYS ###
+###        ###
+PAYLOAD=()
+
+###           ###
+### FUNCTIONS ###
+###           ###
+
+# 
+fn_SYMLINK_PROGRAMS() {
+    echo "asdf"
+}
+
+#
+fn_COPY_PROGRAMS() {
+    echo "asdf"
+}
+
+# Install third-party applications that are helpful
+fn_THIRD_PARTY_PROGRAMS() {
+    # Pygments for colorized cat output
+    $PIP install Pygments
+    if [[ $? != 0 ]]; then
+        $PRINTF "Failed to install Pygments.\n"
+    fi    
+}
 
 ###      ###
 ### MAIN ###

@@ -46,23 +46,27 @@ set novisualbell
 set backup
 set writebackup
 set backupdir=/tmp,.
-
+" Show file stats 
+set ruler
+" Show line numbers 
+set number
+" Allow hidden buffers
+set hidden
+"
 set showmatch
 set showmode
 set showcmd
-set ruler
 set laststatus=2
 set shiftround
 set magic
 set report=0
 set history=4000
 set shell=/bin/zsh
-set number
 set autowrite
 set mouse=a
 set lazyredraw
 set nocp
-set hidden
+
 set grepprg=grep\ -nH\ $*
 
 " Wilds

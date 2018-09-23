@@ -28,6 +28,9 @@ alias list="ls -alFh"
 alias la="ls -alFh"
 alias dir="ls -alFh"
 
+# Listing File Contents: 
+alias scat="pygmentize -g"
+
 ###               ###
 ### OS X Specific ###
 ###               ###
