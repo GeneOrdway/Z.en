@@ -35,6 +35,12 @@
 autoload -U	compinit
 compinit
 #
+# Enable updates for Directory Info script. 
+autoload -U add-zsh-hook
+add-zsh-hook -Uz chpwd () {
+    PR_DIRECTORY_INFO='%F{246}%K{235}'$($HOME/.libexec/directoryinfo.sh -e -P -p -U -G -m -c $PWD)
+}
+#
 # Load vcs_info for vcs (git, mercurial, bazaar, svn, and cvs) support.
 autoload -Uz vcs_info
 #
@@ -544,7 +550,7 @@ setopt GLOB_DOTS
 #    Perform textual history expansion, csh-style, treating the character 
 #    ‘!’ specially.
 #
-#setopt EXTENDED_HISTORY <C>
+#setopt EXTENDED_HISTORY #<C>
 #    
 #    Save each command’s beginning timestamp (in seconds since the epoch) 
 #    and the duration (in seconds) to the history file. The format of this 
@@ -667,7 +673,7 @@ setopt HIST_SAVE_NO_DUPS
 #    the line directly; instead, perform history expansion and reload the 
 #    line into the editing buffer.
 #
-setopt INC_APPEND_HISTORY
+#setopt INC_APPEND_HISTORY
 #    
 #    This options works like APPEND_HISTORY except that new history lines 
 #    are added to the $HISTFILE incrementally (as soon as they are 
@@ -688,7 +694,7 @@ setopt INC_APPEND_HISTORY
 #    This option is only useful if INC_APPEND_HISTORY and SHARE_HISTORY are 
 #    turned off. The three options should be considered mutually exclusive.
 #
-#setopt SHARE_HISTORY <K>
+setopt SHARE_HISTORY #<K>
 #    
 #    This option both imports new commands from the history file, and also 
 #    causes your typed commands to be appended to the history file (the 
@@ -1723,6 +1729,7 @@ export PAGER=vimpager               # Pager
 HISTSIZE=100000
 SAVEHIST=100000
 HISTFILE=${HOME}/.history
+HISTTIMEFORMAT="%F %T"
 
 # Exports directory stack size (see 'dir -v' in .alias)
 export DIRSTACKSIZE=9

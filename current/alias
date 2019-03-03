@@ -31,6 +31,9 @@ alias dir="ls -alFh"
 # Listing File Contents: 
 alias scat="pygmentize -g"
 
+# Format History a little nicer:
+alias history="history -f"
+
 ###               ###
 ### OS X Specific ###
 ###               ###
