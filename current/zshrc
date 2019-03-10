@@ -35,14 +35,18 @@
 autoload -U	compinit
 compinit
 #
+# Note: Need ZSH 4.3.4 or greater for add-zsh-hook
 # Enable updates for Directory Info script. 
 autoload -U add-zsh-hook
-add-zsh-hook -Uz chpwd () {
-    PR_DIRECTORY_INFO='%F{246}%K{235}'$($HOME/.libexec/directoryinfo.sh -e -P -p -U -G -m -c $PWD)
+add-zsh-hook -Uz chpwd() {
+    PR_DIRECTORY_INFO='%F{246}%K{235}'$($HOME/.libexec/directoryinfo.sh -q -e -P -p -U -G -m -c $PWD)
 }
 #
 # Load vcs_info for vcs (git, mercurial, bazaar, svn, and cvs) support.
 autoload -Uz vcs_info
+#
+# Enable exit code status coloration
+#add-zsh-hook -U
 #
 # Set any additional predefined functions here 
 #

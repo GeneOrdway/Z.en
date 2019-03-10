@@ -7,12 +7,11 @@
 ### TO DO ###
 ###       ###
 
-# 1) - Add support for checking programs.
-# 2) - Add support for iTerm graphical output on OS X - image icons.
-# 3) - Display information based upon order in which user specified
+# 1) - Set unique exit code numbers.
+# 2) - Add support for checking programs.
+# 3) - Add support for iTerm graphical output on OS X - image icons.
+# 4) - Display information based upon order in which user specified
 #       parameters at execution time.
-# 4) - 
-# 5) - 
 
 # Abort if any command exits with a non-zero value.
 set -e
@@ -37,7 +36,15 @@ declare -i NOISE_LEVEL=3  # NOISE_LEVEL Levels:
                           # 2 - Error (aka quiet) 
                           # 3 - Info (default)
                           # 4 - Verbose 
-                          # 5 - DebugFILE_SIZES_TOTAL_BYTES=0
+                          # 5 - Debug 
+
+NOISE_LEVEL_OUTPUT="2"  # NOISE_LEVEL_OUTPUT Settings:
+                        # "-" will disable output on STDERR
+                        # "2" will keep output on STDERR in place.
+                        # "/dev/null" will redirect STDERR to the void
+                        # Note: One can set this to anyting else to log
+                        # STDERR to a file.
+
 # Triggers: 
 declare -i NOISE_LEVEL_TRIGGERED=1      # False
 declare -i ICON_TRIGGERED=1             # False
@@ -87,7 +94,7 @@ ICON_TIME_BIRTH=""
 
 # After adding program checks, there should be error-checking for this to 
 # make sure basename is installed before setting the variable's name.
-SCRIPTNAME=`$BASENAME $0`
+SCRIPTNAME=$($BASENAME $0)
 
 ###        ###
 ### ARRAYS ###
@@ -102,7 +109,7 @@ declare -a ARRAY_DIRECTORY_INFO=()
 ###           ###
 
 # Show the Help menu:
-fn_SHOW_HELP() {
+fnSHOW_HELP() {
     $PRINTF "$SCRIPTNAME Help:\r
     \rUsage: $SCRIPTNAME [-abCcdEeGghilmPpqsUuv]\r
             \r
@@ -140,20 +147,16 @@ exit 0
 }
 
 # Check for installed programs:
-fn_CHECK_PROGRAMS() {
+fnCHECK_PROGRAMS() {
+    # This script isn't finished yet.
     $PRINTF "Programs.\n"
-}
-
-# Error Messages:
-fn_ERROR_MESSAGE() {
-    $PRINTF "ERROR: $*\n" 1>&2 
 }
 
 # Check to make sure NOISE_LEVEL_TRIGGERED hasn't already been triggered. 
 fnNOISE_LEVEL_TRIGGERED_CHECK() {
     if [ $NOISE_LEVEL_TRIGGERED -eq 0 ]; then
         if [ $NOISE_LEVEL -ge 2 ]; then
-            fn_ERROR_MESSAGE "Program cannot have multiple levels of noise selected."
+            $PRINTF "ERROR: Program cannot have multiple levels of noise selected.\n" 1>&2
         fi
         exit 1
     fi
@@ -163,7 +166,7 @@ fnNOISE_LEVEL_TRIGGERED_CHECK() {
 fnICON_CHECK() {
     if [ $ICON_TRIGGERED -eq 0 ]; then
         if [ $NOISE_LEVEL -ge 2 ]; then
-            fn_ERROR_MESSAGE "Program cannot have multiple types of icons selected."
+            $PRINTF "ERROR: Program cannot have multiple types of icons selected.\n" 1>&2
         fi
         exit 1
     fi
@@ -173,7 +176,7 @@ fnICON_CHECK() {
 fnFORMAT_CHECK() {
     if [ $FORMAT_TRIGGERED -eq 0 ]; then
         if [ $NOISE_LEVEL -ge 2 ]; then
-            fn_ERROR_MESSAGE "Program cannot have multiple format options selected."
+            $PRINTF "ERROR: Program cannot have multiple format options selected.\n" 1>&2
         fi
         exit 1
     fi
@@ -187,6 +190,16 @@ fnFORMAT_CHECK() {
 # Make sure our programs exist at specified locations.
 if [ ! -e $PRINTF ]; then
     # Cannot display error message with no program to print it.
+    # NOTE: We could try switching to echo if this isn't found.
+    exit 1
+fi
+
+# Check to make sure NOISE_LEVEL isn't too high.
+if [ $NOISE_LEVEL -gt 5 ]; then 
+    # We can't actually check for a noise level to output the errors here
+    # because NOISE_LEVEL is already set too high. By default, we should
+    # just print an error, send it to STDERR and exit.
+    $PRINTF "ERROR: Variable 'NOISE_LEVEL' is out of range.\n" 1>&2
     exit 1
 fi
 
@@ -201,18 +214,14 @@ fi
 # External Scripts:
 if [ ! -e $BYTES2HUMAN ]; then
 # Does the script bytes2human exist?
-    fn_ERROR_MESSAGE "Cannot find $BYTES2HUMAN."
+    if [ $NOISE_LEVEL -ge 2 ]; then
+        $PRINTF "ERROR: Cannot find $BYTES2HUMAN. Exiting.\n" 1>&2
+    fi
     exit 1
 elif [ ! -x $BYTES2HUMAN ]; then
 # Is the script bytes2human executable?
-    fn_ERROR_MESSAGE "$BYTES2HUMAN is not executable."
-    exit 1
-fi
-
-# Check to make sure NOISE_LEVEL isn't too high.
-if [ $NOISE_LEVEL -gt 5 ]; then 
     if [ $NOISE_LEVEL -ge 2 ]; then
-        fn_ERROR_MESSAGE "Variable 'NOISE_LEVEL' is out of range."
+        $PRINTF "ERROR: $BYTES2HUMAN is not executable. Try chmod +x on $BYTES2HUMAN to fix this. Exiting.\n" 1>&2
     fi
     exit 1
 fi
@@ -223,9 +232,9 @@ ARRAY_ARGUMENTS_LENGTH=${#ARRAY_ARGUMENTS[*]}
 for ((i=0; i < $ARRAY_ARGUMENTS_LENGTH; i++)) do
 ARRAY_ARGUMENTS_POSITION=$i
     if [ $NOISE_LEVEL -eq 5 ]; then
-        $PRINTF "DEBUG - ARRAY_ARGUMENTS[$i] is: ${ARRAY_ARGUMENTS[$i]}\n"
-        $PRINTF "DEBUG - ARRAY_ARGUMENTS_LENGTH is: $ARRAY_ARGUMENTS_LENGTH\n"
-        $PRINTF "DEBUG - ARRAY_ARGUMENTS_POSITION is: $ARRAY_ARGUMENTS_POSITION\n"
+        $PRINTF "DEBUG($LINENO) - ARRAY_ARGUMENTS[$i] is: ${ARRAY_ARGUMENTS[$i]}\n"
+        $PRINTF "DEBUG($LINENO) - ARRAY_ARGUMENTS_LENGTH is: $ARRAY_ARGUMENTS_LENGTH\n"
+        $PRINTF "DEBUG($LINENO) - ARRAY_ARGUMENTS_POSITION is: $ARRAY_ARGUMENTS_POSITION\n"
     fi
     # Check ARRAY_ARGUMENTS for a directory.
     if [[ "${ARRAY_ARGUMENTS[$i]}" =~ ^[/] ]]; then
@@ -269,7 +278,7 @@ ARRAY_ARGUMENTS_POSITION=$i
             ;;
             -g | --group-id) GROUP_ID_FLAG=0
             ;;
-            -h | --help) fnHELP; exit 0
+            -h | --help) fnSHOW_HELP; exit 0
             ;;
             -i | --icon-image) fnICON_CHECK; ICON_IMAGE_FLAG=0; ICON_IMAGE_FLAG=0
             ;;
@@ -281,15 +290,15 @@ ARRAY_ARGUMENTS_POSITION=$i
             ;;
             -p | --permissions-number) PERMISSIONS_NUMBER_FLAG=0
             ;;
-            -q | --quiet) fnNOISE_LEVEL_TRIGGERED_CHECK; NOISE_LEVEL=2; NOISE_LEVEL_TRIGGERED=0
+            -q | --quiet) fnNOISE_LEVEL_TRIGGERED_CHECK; NOISE_LEVEL=2; NOISE_LEVEL_TRIGGERED=0; NOISE_LEVEL_OUTPUT="-" 
             ;;
-            -s | --silent) fnNOISE_LEVEL_TRIGGERED_CHECK; NOISE_LEVEL=1; NOISE_LEVEL_TRIGGERED=0
+            -s | --silent) fnNOISE_LEVEL_TRIGGERED_CHECK; NOISE_LEVEL=1; NOISE_LEVEL_TRIGGERED=0; NOISE_LEVEL_OUTPUT="-" 
             ;;
             -U | --user-name) USER_NAME_FLAG=0
             ;;
             -u | --user-id) USER_ID_FLAG=0
             ;;
-            -v | --verbose) fnNOISE_LEVEL_TRIGGERED_CHECK; NOISE_LEVEL=4; NOISE_LEVEL_TRIGGERED=0
+            -v | --verbose) fnNOISE_LEVEL_TRIGGERED_CHECK; NOISE_LEVEL=4; NOISE_LEVEL_TRIGGERED=0; NOISE_LEVEL_OUTPUT="2"
             ;;
             *) exit 1
             ;;
@@ -300,14 +309,18 @@ done
 # Check the directory:
 if [ -z $DIRECTORY ]; then
 # Is a directory supplied? No? Show the help menu.
-    fn_SHOW_HELP
+    fnSHOW_HELP
 elif [ ! -d $DIRECTORY ]; then
 # Is the supplied directory actually a directory?
-    fn_ERROR_MESSAGE "$DIRECTORY is not a directory."
+    if [ $NOISE_LEVEL -ge 2 ]; then 
+        $PRINTF "ERROR: $DIRECTORY is not a directory.\n" 1>&2
+    fi
     exit 1
 elif [ ! -r $DIRECTORY ]; then
 # Is the supplied directory readable?
-    fn_ERROR_MESSAGE "Directory $DIRECTORY is not readable."
+    if [ $NOISE_LEVEL -ge 2 ]; then
+        $PRINTF "ERROR: Directory $DIRECTORY is not readable.\n" 1>&2
+    fi
     exit 1
 fi
 
@@ -315,11 +328,13 @@ fi
 
 # Determine the Operating System:
 # OS X
-if [[ "$OSTYPE" == "darwin"* ]]; then     
-    ARRAY_FILE_SIZES=(`$FIND $DIRECTORY/* -maxdepth 1 -prune -type f -print0 | $XARGS -0 $STAT -f '%z'`)
-    ARRAY_SUBDIRECTORY_LIST=(`$FIND $DIRECTORY -maxdepth 1 -mindepth 1 -type d -exec $BASENAME {} \;`)
-    ARRAY_DIRECTORY_INFO=(`$STAT -f "%Sp %#p %Su %u %Sg %g %Sa %Sm %Sc %SB" -t "$STAT_TIME_ARGS" $DIRECTORY`)
-    CURRENT_YEAR=`$DATE +%Y`
+if [[ "$OSTYPE" == "darwin"* ]]; then 
+    # Copied STAT_TIME_ARGS here, as these may vary by OS type.
+    STAT_TIME_ARGS="%b %e %Y %H:%M"
+    ARRAY_FILE_SIZES=($($FIND $DIRECTORY/* -maxdepth 1 -prune -type f -print0 2>&$NOISE_LEVEL_OUTPUT | $XARGS -0 $STAT -f '%z' 2>&$NOISE_LEVEL_OUTPUT))
+    ARRAY_SUBDIRECTORY_LIST=($($FIND $DIRECTORY -maxdepth 1 -mindepth 1 -type d -exec $BASENAME {} \; 2>&$NOISE_LEVEL_OUTPUT))
+    ARRAY_DIRECTORY_INFO=($($STAT -f "%Sp %#p %Su %u %Sg %g %Sa %Sm %Sc %SB" -t "$STAT_TIME_ARGS" $DIRECTORY 2>&$NOISE_LEVEL_OUTPUT))
+    CURRENT_YEAR=$($DATE +%Y 2>&$NOISE_LEVEL_OUTPUT)
 
 # If the Terminal is iTerm, use inline images. 
 #    if [ $TERM_PROGRAM == "iTerm.app" ]; then
@@ -340,7 +355,9 @@ elif [[ "$OSTYPE" == "linux-gnu" ]]; then
     ARRAY_DIRECTORY_INFO=(`$STAT -f "%Sp %#p %Su %u %Sg %g %Sa %Sm %Sc %SB" -t "$STAT_TIME_ARGS" $DIRECTORY`)
     CURRENT_YEAR=`$DATE +%Y`
 else 
-    fn_ERROR_MESSAGE "Could not determine Operating System. Exiting."
+    if [ $NOISE_LEVEL -ge 2 ]; then
+        $PRINTF "ERROR: Could not determine Operating System. Exiting.\n" 1>&2
+    fi
     exit 1
 fi
 
@@ -356,15 +373,15 @@ for ((i=0; i < ${#ARRAY_FILE_SIZES[@]}; i++)) do
 done
 
 # Convert bytes to a more human-readable format:
-FILE_SIZES_TOTAL_HUMAN=`$BYTES2HUMAN $FILE_SIZES_TOTAL_BYTES`
+FILE_SIZES_TOTAL_HUMAN=$($BYTES2HUMAN $FILE_SIZES_TOTAL_BYTES 2>&$NOISE_LEVEL_OUTPUT)
 
 # Debugging information:
 if [ $NOISE_LEVEL -eq 5 ]; then 
-    $PRINTF "DEBUG - Number of files in $DIRECTORY: $NUMBER_OF_FILES\n"
-    $PRINTF "DEBUG - Number of directories in $DIRECTORY: ${#ARRAY_SUBDIRECTORY_LIST[@]}\n"
-    $PRINTF "DEBUG - BYTES2HUMAN script location is: $BYTES2HUMAN\n"
-    $PRINTF "DEBUG - FILE_SIZES_TOTAL_BYTES is: $FILE_SIZES_TOTAL_BYTES\n"
-    $PRINTF "DEBUG - FILE_SIZES_TOTAL_HUMAN is: $FILE_SIZES_TOTAL_HUMAN\n"
+    $PRINTF "DEBUG($LINENO) - Number of files in $DIRECTORY: $NUMBER_OF_FILES\n"
+    $PRINTF "DEBUG($LINENO) - Number of directories in $DIRECTORY: ${#ARRAY_SUBDIRECTORY_LIST[@]}\n"
+    $PRINTF "DEBUG($LINENO) - BYTES2HUMAN script location is: $BYTES2HUMAN\n"
+    $PRINTF "DEBUG($LINENO) - FILE_SIZES_TOTAL_BYTES is: $FILE_SIZES_TOTAL_BYTES\n"
+    $PRINTF "DEBUG($LINENO) - FILE_SIZES_TOTAL_HUMAN is: $FILE_SIZES_TOTAL_HUMAN\n"
 fi
 
 # Debugging Information:
@@ -379,11 +396,11 @@ fi
 # Icons - Emoji:
 # Note: Emojis need an additional space to accommodate for their size.
 if [ $ICON_EMOJI_FLAG -eq 0 ]; then
-    ICON_FILE="📄 "
-    ICON_DIRECTORY="📁 "
-    ICON_USER="👤 "
-    ICON_GROUP="👥 "
-    ICON_PERMISSIONS="🔐 "
+    ICON_FILE="📄"
+    ICON_DIRECTORY="📁"
+    ICON_USER="👤"
+    ICON_GROUP="👥"
+    ICON_PERMISSIONS="🔐"
     ICON_TIME_ACCESS="🕘 "
     ICON_TIME_MODIFIED="🕘 "
     ICON_TIME_CHANGE="🕘 "
@@ -419,8 +436,8 @@ fi
 
 # Icons - None:
 if [[ $ICON_EMOJI_FLAG -eq 1 && $ICON_LETTER_FLAG -eq 1 && $ICON_IMAGE_FLAG -eq 1 ]]; then
-    ICON_FILE="Files:"
-    ICON_DIRECTORY="Directories:"
+    ICON_FILE="Files: "
+    ICON_DIRECTORY="Directories: "
     ICON_USER=" "
     ICON_GROUP=" "
     ICON_PERMISSIONS=" "
@@ -533,28 +550,28 @@ fi
 
 # Debugging information:
 if [ $NOISE_LEVEL -eq 5 ]; then 
-    $PRINTF "DEBUG - Whole ARRAY_DIRECTORY_INFO is: ${ARRAY_DIRECTORY_INFO[*]}\n"
-    $PRINTF "DEBUG - PERMISSIONS_LONG is: $PERMISSIONS_LONG\n"
-    $PRINTF "DEBUG - PERMISSIONS_NUMBER is: $PERMISSIONS_NUMBER\n"
-    $PRINTF "DEBUG - USER_NAME is: $USER_NAME\n"
-    $PRINTF "DEBUG - USER_ID is: $USER_ID\n"
-    $PRINTF "DEBUG - GROUP_NAME is: $GROUP_NAME\n"
-    $PRINTF "DEBUG - GROUP_ID is: $GROUP_ID\n"
-    $PRINTF "DEBUG - TIME_ACCESS is: $TIME_ACCESS\n"
-    $PRINTF "DEBUG - TIME_MODIFIED is: $TIME_MODIFIED\n"
-    $PRINTF "DEBUG - TIME_CHANGE is: $TIME_CHANGE\n"
-    $PRINTF "DEBUG - TIME_BIRTH is: $TIME_BIRTH\n"
-    $PRINTF "DEBUG - CURRENT_YEAR is: $CURRENT_YEAR\n"
-    $PRINTF "DEBUG - Stat year is: ${ARRAY_DIRECTORY_INFO[12]}\n"
-    $PRINTF "DEBUG - ICON_PERMISSIONS is: $ICON_PERMISSIONS\n"
-    $PRINTF "DEBUG - ICON_USER is: $ICON_USER\n"
-    $PRINTF "DEBUG - ICON_GROUP is: $ICON_GROUP\n"
-    $PRINTF "DEBUG - ICON_DIRECTORY is: $ICON_DIRECTORY\n"
-    $PRINTF "DEBUG - ICON_FILE is: $ICON_FILE\n"
-    $PRINTF "DEBUG - ICON_TIME_ACCESS is: $ICON_TIME_ACCESS\n"
-    $PRINTF "DEBUG - ICON_TIME_MODIFIED is: $ICON_TIME_MODIFIED\n"
-    $PRINTF "DEBUG - ICON_TIME_CHANGE is: $ICON_TIME_CHANGE\n"
-    $PRINTF "DEBUG - ICON_TIME_BIRTH is: $ICON_TIME_BIRTH\n"
+    $PRINTF "DEBUG($LINENO) - Whole ARRAY_DIRECTORY_INFO is: ${ARRAY_DIRECTORY_INFO[*]}\n"
+    $PRINTF "DEBUG($LINENO) - PERMISSIONS_LONG is: $PERMISSIONS_LONG\n"
+    $PRINTF "DEBUG($LINENO) - PERMISSIONS_NUMBER is: $PERMISSIONS_NUMBER\n"
+    $PRINTF "DEBUG($LINENO) - USER_NAME is: $USER_NAME\n"
+    $PRINTF "DEBUG($LINENO) - USER_ID is: $USER_ID\n"
+    $PRINTF "DEBUG($LINENO) - GROUP_NAME is: $GROUP_NAME\n"
+    $PRINTF "DEBUG($LINENO) - GROUP_ID is: $GROUP_ID\n"
+    $PRINTF "DEBUG($LINENO) - TIME_ACCESS is: $TIME_ACCESS\n"
+    $PRINTF "DEBUG($LINENO) - TIME_MODIFIED is: $TIME_MODIFIED\n"
+    $PRINTF "DEBUG($LINENO) - TIME_CHANGE is: $TIME_CHANGE\n"
+    $PRINTF "DEBUG($LINENO) - TIME_BIRTH is: $TIME_BIRTH\n"
+    $PRINTF "DEBUG($LINENO) - CURRENT_YEAR is: $CURRENT_YEAR\n"
+    $PRINTF "DEBUG($LINENO) - Stat year is: ${ARRAY_DIRECTORY_INFO[12]}\n"
+    $PRINTF "DEBUG($LINENO) - ICON_PERMISSIONS is: $ICON_PERMISSIONS\n"
+    $PRINTF "DEBUG($LINENO) - ICON_USER is: $ICON_USER\n"
+    $PRINTF "DEBUG($LINENO) - ICON_GROUP is: $ICON_GROUP\n"
+    $PRINTF "DEBUG($LINENO) - ICON_DIRECTORY is: $ICON_DIRECTORY\n"
+    $PRINTF "DEBUG($LINENO) - ICON_FILE is: $ICON_FILE\n"
+    $PRINTF "DEBUG($LINENO) - ICON_TIME_ACCESS is: $ICON_TIME_ACCESS\n"
+    $PRINTF "DEBUG($LINENO) - ICON_TIME_MODIFIED is: $ICON_TIME_MODIFIED\n"
+    $PRINTF "DEBUG($LINENO) - ICON_TIME_CHANGE is: $ICON_TIME_CHANGE\n"
+    $PRINTF "DEBUG($LINENO) - ICON_TIME_BIRTH is: $ICON_TIME_BIRTH\n"
 fi
 
 # Standardize the output:
@@ -580,7 +597,7 @@ fi
 if [[ $PERMISSIONS_LONG_FLAG -eq 0 || $PERMISSIONS_NUMBER_FLAG -eq 0 || $USER_NAME_FLAG -eq 0 || $USER_ID_FLAG -eq 0 || $GROUP_NAME_FLAG -eq 0 || $GROUP_ID_FLAG -eq 0 ]]; then
     SPACER=" "
 fi
-FILE_SIZE_OUTPUT="$SPACER$ICON_DIRECTORY$NUMBER_OF_DIRECTORIES$SPACER$ICON_FILE$NUMBER_OF_FILES, $FILE_SIZES_TOTAL_HUMAN"
+FILE_SIZE_OUTPUT="$SPACER$ICON_DIRECTORY$NUMBER_OF_DIRECTORIES $ICON_FILE$NUMBER_OF_FILES, $FILE_SIZES_TOTAL_HUMAN"
 
 # Time: 
 TIME_OUTPUT="$ICON_TIME_ACCESS$TIME_ACCESS$ICON_TIME_MODIFIED$TIME_MODIFIED$ICON_TIME_CHANGE$TIME_CHANGE$ICON_TIME_BIRTH$TIME_BIRTH"

@@ -146,8 +146,6 @@ preexec () {
 #        local CMD=${1[(wr)^(*=*|sudo|-*)]}
 #        echo -n "\ek$CMD\e\\"
 #    fi
-
-local EXIT_CODE=$?
 }
 
 ###        ###
@@ -210,6 +208,7 @@ PR_PWD='%F{246}%K{235}%/'
 #PR_PRIVILEGES='%?' -- works properly
 fn_ExitStatus
 
+
 #if [[ $EXIT_CODE -eq 0 ]]; then  
 #    PR_PRIVILEGES='%F{34}%K{235}%#%f%k'
 #elif [[ $EXIT_CODE -eq 1 ]]; then  
@@ -219,7 +218,7 @@ fn_ExitStatus
 #fi
 
 # Directory Info:
-PR_DIRECTORY_INFO='%F{246}%K{235}'$($HOME/.libexec/directoryinfo.sh -e -P -p -U -G -m -c $PWD)
+PR_DIRECTORY_INFO='%F{246}%K{235}'$($HOME/.libexec/directoryinfo.sh -q -e -P -p -U -G -m -c $PWD)
 
 # Version Control System Status:
 PR_VCS_STATUS='%F{246}%K{235}'${vcs_info_msg_0_}
