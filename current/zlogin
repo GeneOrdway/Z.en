@@ -15,6 +15,23 @@ if [[ "$SSH_CONNECTION" != "" && "$MY_SSH_CONNECTION" != "yes" ]]; then
     done
 fi
 
+# Launch Neofetch on shell login.
+local NEOFETCH="/usr/local/bin/neofetch"
+local NEOFETCH_ARTWORK="/$HOME/.misc/iTerm2/AppleLogo.png"
+# Make sure Neofetch exists.
+if [[ -e $NEOFETCH ]]; then
+    # Now check
+    if [[ $TERM_PROGRAM = "iTerm.app" ]]; then
+        $NEOFETCH --iterm2 $NEOFETCH_ARTWORK
+    elif [[ $TERM_PROGRAM = "Apple_Terminal" ]]; then
+        $NEOFETCH
+    else
+        # Note sure if this is needed.
+        break
+    fi
+
+fi
+
 ###         ###
 ### TESTING ###
 ###         ###
