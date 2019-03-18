@@ -16,20 +16,31 @@ if [[ "$SSH_CONNECTION" != "" && "$MY_SSH_CONNECTION" != "yes" ]]; then
 fi
 
 # Launch Neofetch on shell login.
-local NEOFETCH="/usr/local/bin/neofetch"
-local NEOFETCH_ARTWORK="/$HOME/.misc/iTerm2/AppleLogo.png"
-# Make sure Neofetch exists.
-if [[ -e $NEOFETCH ]]; then
-    # Now check
-    if [[ $TERM_PROGRAM = "iTerm.app" ]]; then
-        $NEOFETCH --iterm2 $NEOFETCH_ARTWORK
-    elif [[ $TERM_PROGRAM = "Apple_Terminal" ]]; then
-        $NEOFETCH
-    else
-        # Note sure if this is needed.
-        break
+if [[ "$OSTYPE" == "darwin"* ]]; then
+    local NEOFETCH="/usr/local/bin/neofetch"
+    local NEOFETCH_ARTWORK="/$HOME/.misc/iTerm2/AppleLogo.png"
+    # Make sure Neofetch exists in the specified directory.
+    if [[ -e $NEOFETCH ]]; then
+        # See if our terminal program is 'iTerm'
+        if [[ $TERM_PROGRAM = "iTerm.app" ]]; then
+            # Are we running inside of a tmux session?
+            if [[ $TERM = "screen"* &&  -n $TMUX ]]; then
+                $NEOFETCH 
+            else
+                # Make sure a directory is specified for $NEOFETCH_ARTWORK
+                if [[ -z $NEOFETCH_ARTWORK ]]; then
+                    # If no artwork is found, set to blank to avoid throwing an error.
+                    local NEOFETCH_ARTWORK=""
+                fi
+                $NEOFETCH --iterm2 $NEOFETCH_ARTWORK
+            fi
+        elif [[ $TERM_PROGRAM = "Apple_Terminal" ]]; then
+                $NEOFETCH
+        else
+            # Note sure if this is needed.
+            break
+        fi
     fi
-
 fi
 
 ###         ###
